@@ -110,15 +110,15 @@
      * compile the source
      * @example compile("<%this.userName%>");
      *
-     * @param {string} source template'source
+     * @param {string} string template'string
      * @return {function} function cache
      */
-    var compile = function (source) {
+    var compile = function (string) {
         var limitation = /\<%(.+?)%\>/g;
         var keyword = /(^( )?(if|for|else|switch|case|break|{|}|;))(.*)?/g;
         var source = 'var s=[];';
 
-        // push code snippets
+        // push source snippets
         var push = function(line, isJs) {
             line = trim(line).replace("\n", "\\\n");
             if(isJs) {
@@ -133,12 +133,12 @@
         var index = 0;
         var match;
         
-        while (match = limitation.exec(source)) {
-            push(source.slice(index, match.index), false);
+        while (match = limitation.exec(string)) {
+            push(string.slice(index, match.index), false);
             push(match[1], true);
             index = match.index + match[0].length;
         }
-        push(source.substr(index, source.length - index));
+        push(string.substr(index, string.length - index));
         return new Function(source + '\nreturn s.join("");'); 
     };
 
