@@ -45,27 +45,24 @@
      * @return {string} the trimed string
      */
     var template = function (source, data) {
-        var func = null;
-        var source = trim(source);
-        var hash = getHash(source);
-        if(! cache[hash]) {
-            cache[hash] = compile(source);
-        }
-        // read function from cache
-        func = cache[hash];
-
-        if (undefined === data) {
-            return func;
+        var source = trim(source),
+            hash = getHash(source),
+            // read function from cache
+            func = cache[hash] = cache[hash] || compile(source);
+        if (arguments.length == 2) {
+            try {
+                return func.apply(data);
+            } catch (ex) {}
         } else {
-            return func.apply(data);
+            return func;
         }
-    };
+    },
 
     /**
      * the collection the cache compiled template.
      * @type Object
      */
-    var cache = {};
+    cache = {},
 
     /**
      * Calculate the hash for a string.
@@ -74,9 +71,9 @@
      * @param {string} string The string to Calculated
      * @return {Number} result
      */
-    var getHash = function(string) {
-        var hash = 1;
-        var code = 0;
+    getHash = function(string) {
+        var hash = 1,
+            code = 0;
         for (var i = string.length - 1; i >= 0; i--) {
             code = string.charCodeAt(i);
             hash = (hash << 6 & 268435455) + code + (code << 14);
@@ -84,7 +81,7 @@
             hash = code != 0 ? hash ^ code >> 21 : hash;
         };
         return hash;
-    };
+    },
 
     /**
      * strip whitespace from the beginning and end of a string
@@ -95,16 +92,9 @@
      * @param {String} source the target string that will be trimmed.
      * @return {string} the trimed string
      */
-    var trim = function(source) {
-        source = source.replace(/^\s+/, '');
-        for (var i = source.length - 1; i >= 0; i--) {
-            if (/\S/.test(source.charAt(i))) {
-                source = source.substring(0, i + 1);
-                break;
-            }
-        }
-        return source;
-    };
+    trim = function(source) {
+        return source.replace(/(^\s*)|(\s*$)/g, "");
+    },
 
     /**
      * compile the source
@@ -113,33 +103,31 @@
      * @param {string} string template'string
      * @return {function} function cache
      */
-    var compile = function (string) {
-        var limitation = /\<%(.+?)%\>/g;
-        var keyword = /(^( )?(if|for|else|switch|case|break|{|}|;))(.*)?/g;
-        var source = 'var s=[];';
+    compile = function (string) {
+        var limitation = /\<%(.+?)%\>/g,
+            keyword = /(^( )?(if|for|else|switch|case|break|{|}|;))(.*)?/g,
+            index = 0,
+            match,
+            source = 'var _=[];';
 
         // push source snippets
         var push = function(line, isJs) {
             line = trim(line).replace("\n", "\\\n");
             if(isJs) {
-                source += line.match(keyword) ? line : '\ns.push(' + line + ');';
+                source += line.match(keyword) ? line : '\n_.push(' + line + ');';
             } else {
                 if (line.length > 0) {
-                    source += '\ns.push("' + line.replace(/"/g, '\\"') + '");'
+                    source += '\n_.push("' + line.replace(/"/g, '\\"') + '");'
                 }
             }
         }
-        
-        var index = 0;
-        var match;
-        
         while (match = limitation.exec(string)) {
             push(string.slice(index, match.index), false);
             push(match[1], true);
             index = match.index + match[0].length;
         }
         push(string.substr(index, string.length - index));
-        return new Function(source + '\nreturn s.join("");'); 
+        return new Function(source + '\nreturn _.join("");'); 
     };
 
     return template;
