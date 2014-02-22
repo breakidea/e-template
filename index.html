@@ -20,12 +20,15 @@ var data = {
 }
 </script>
 <script type="text/text" id="template">
+
+
     <%this.title%>/<%this.name%>
     <%for(var i = 0; i < this.list.length; i++) {%>
         <li>
             <span><%this.list[i].date%></span>·<%this.list[i].title%>
         </li>
     <%}%>
+    zz
 </script>
 <div id="inner"></div>
 <script type="text/javascript">

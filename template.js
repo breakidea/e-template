@@ -45,14 +45,11 @@
      * @return {string} the trimed string
      */
     var template = function (source, data) {
-        var source = trim(source),
-            hash = getHash(source),
-            // read function from cache
-            func = cache[hash] = cache[hash] || compile(source);
+        var hash = getHash(source);
+        // read function from cache
+        var func = _cache[hash] = _cache[hash] || compile(source);
         if (arguments.length == 2) {
-            try {
-                return func.apply(data);
-            } catch (ex) {}
+            return func.apply(data);
         } else {
             return func;
         }
@@ -62,7 +59,7 @@
      * the collection the cache compiled template.
      * @type Object
      */
-    cache = {},
+    _cache = {},
 
     /**
      * Calculate the hash for a string.
@@ -93,7 +90,7 @@
      * @return {string} the trimed string
      */
     trim = function(source) {
-        return source.replace(/(^\s*)|(\s*$)/g, "");
+        return source.replace(/(^\s*)|(\s*$)/g, '');
     },
 
     /**
@@ -108,27 +105,28 @@
             keyword = /(^( )?(if|for|else|switch|case|break|{|}|;))(.*)?/g,
             index = 0,
             match,
-            source = 'var _=[];';
+            source = '\tvar _ = "";';
 
         // push source snippets
-        var push = function(line, isJs) {
+        var add = function(line, isJs) {
             line = trim(line).replace("\n", "\\\n");
             if(isJs) {
-                source += line.match(keyword) ? line : '\n_.push(' + line + ');';
+                console.log(line)
+                source += (line.match(keyword) ? line : '\n\t_ += (' + line + ');');
             } else {
                 if (line.length > 0) {
-                    source += '\n_.push("' + line.replace(/"/g, '\\"') + '");'
+                    source += '\n\t_ += ("' + line.replace(/"/g, '\\"') + '");'
                 }
             }
         }
         while (match = limitation.exec(string)) {
-            push(string.slice(index, match.index), false);
-            push(match[1], true);
+            add(string.slice(index, match.index), false);
+            add(match[1], true);
             index = match.index + match[0].length;
         }
-        push(string.substr(index, string.length - index));
-        return new Function(source + '\nreturn _.join("");'); 
+        // add last template
+        add(string.substr(index, string.length - index), false);
+        return new Function(source + '\n\treturn _;'); 
     };
-
     return template;
 }));
