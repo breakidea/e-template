@@ -130,6 +130,28 @@
         add(string.substr(index, string.length - index), false);
         return new Function(source + '\n\treturn _;'); 
     };
+    
+    /*
+    template.init = function(){
+        var scripts = document.getElementsByTagName('SCRIPT');
+        for (var i = 0, length = scripts.length; i < length; i++) {
+            var ele = scripts[i];
+            if (ele.getAttribute('type') == "text/template") {
+                _cache[ele.id] = compile(ele.innerHTML);
+            }
+        }
+        return _cache;
+    };
+    
+    template.render = function (id, data) {
+        template.init();
+        var func = _cache[id] = _cache[id];
+        try {
+            return func.apply(data);
+        } catch (ex) {
+            return '';
+        }
+    }*/
 
     return template;
 }));
