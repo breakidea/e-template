@@ -5,23 +5,9 @@
 </head>
 <body>
 <script type="text/javascript">
-var data = {
-    name: "Activity",
-    title: "团队动态",
-    list: [
-        {date: "[06-22]", title: "你喜欢九月吗，风和日丽的初秋"},
-        {date: "[07-27]", title: "反物质原子结构现端倪"},
-        {date: "[04-24]", title: "相信经常玩木马的朋友们，DLL木马揭秘"},
-        {date: "[05-06]", title: "反物质原子结构现端倪"},
-        {date: "[05-17]", title: "grub不能往MBR添加，否则会破坏Win7的激..."},
-        {date: "[05-29]", title: "相信经常玩木马的朋友们，DLL木马揭秘"},
-        {date: "[06-10]", title: "反物质原子结构现端倪"}
-    ]
-}
+    
 </script>
 <script type="text/text" id="template">
-
-
     <%this.title%>/<%this.name%>
     <%for(var i = 0; i < this.list.length; i++) {%>
         <li>
@@ -32,9 +18,23 @@ var data = {
 </script>
 <div id="inner"></div>
 <script type="text/javascript">
-var temp = document.getElementById('template');
-var htm = template(temp.innerHTML, data);
-document.getElementById('inner').innerHTML = htm
+;(function(){
+    var data = {
+        name: "Activity",
+        title: "团队动态",
+        list: [
+            {date: "[06-22]", title: "你喜欢九月吗，风和日丽的初秋"},
+            {date: "[07-27]", title: "反物质原子结构现端倪"},
+            {date: "[04-24]", title: "相信经常玩木马的朋友们，DLL木马揭秘"},
+            {date: "[05-06]", title: "反物质原子结构现端倪"},
+            {date: "[05-17]", title: "grub不能往MBR添加，否则会破坏Win7的激..."},
+            {date: "[05-29]", title: "相信经常玩木马的朋友们，DLL木马揭秘"},
+            {date: "[06-10]", title: "反物质原子结构现端倪"}
+        ]
+    };
+    var temp = document.getElementById('template');
+    document.getElementById('inner').innerHTML = template(temp.innerHTML, data);
+})();
 </script>
 </body>
 </html>

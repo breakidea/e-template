@@ -20,15 +20,17 @@
  * THE SOFTWARE.
  *
  * file:    another template engine in Javascript
- * author:  Liu,Ronghan(liuronghan@baidu.com)
+ * author:  mycoin (nqliujiangtao@gmail.com)
  * date:    2013/09/28
  * repos:   https://github.com/mycoin/e-template
  */
 ;(function (global, factory) {
     //AMD and CMD.
     typeof define === 'function' && define(factory);
-    //Node.js and Browser global
+    
+    //Node.js and Browser `global`
     (typeof exports !== 'undefined' ? exports : global).template = factory();
+    
 }(this, function () {
 
     // using strict mode
@@ -111,8 +113,7 @@
         var add = function(line, isJs) {
             line = trim(line).replace("\n", "\\\n");
             if(isJs) {
-                console.log(line)
-                source += (line.match(keyword) ? line : '\n\t_ += (' + line + ');');
+                source += '\n\t' + (line.match(keyword) ? line : '_ += (' + line + ');');
             } else {
                 if (line.length > 0) {
                     source += '\n\t_ += ("' + line.replace(/"/g, '\\"') + '");'
@@ -124,9 +125,11 @@
             add(match[1], true);
             index = match.index + match[0].length;
         }
-        // add last template
+        
+        // add last snippets
         add(string.substr(index, string.length - index), false);
         return new Function(source + '\n\treturn _;'); 
     };
+
     return template;
 }));
