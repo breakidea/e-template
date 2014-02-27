@@ -19,10 +19,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * file:    another template engine in Javascript
+ * file:    Yet another template engine in Javascript.
  * author:  mycoin (nqliujiangtao@gmail.com)
  * date:    2013/09/28
- * repos:   https://github.com/mycoin/e-template
+ * repos:   https://github.com/mycoin/mini-template
  */
 ;(function (global, factory) {
     //AMD and CMD.

@@ -1,4 +1,4 @@
 mini-template
 =============
 
-template engine in Javascript.
+Yet another template engine in Javascript.
