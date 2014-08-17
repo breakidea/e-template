@@ -1,0 +1,128 @@
+/*
+ * Copyright 2013 Baidu Inc. All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the 'Software'), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, restore, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * file:    Yet another template engine in Javascript.
+ * author:  mycoin (nqliujiangtao@gmail.com)
+ * date:    2013/09/28
+ * repos:   https://github.com/mycoin/mini-template
+ */
+var fs = require('fs');
+var template = require('./template');
+var pretty = require("js-pretty").pretty;
+var tpl = fs.readFileSync('index.html', 'utf-8');
+
+/**
+ * Simple common assertion API
+ * @public
+ *
+ * @param {*} condition The condition to test.  Note that this may be used to
+ *     test whether a value is defined or not, and we don't want to force a
+ *     cast to Boolean.
+ * @param {string=} optMessage A message to use in any error.
+ */
+function assert(condition, optMessage) {
+    if (!condition) {
+        var msg = 'Assertion failed';
+        if (optMessage) {
+            msg = msg + ': ' + optMessage;
+        }
+        throw new Error(msg);
+    }
+}
+
+var parser = require('./lib/parser');
+var lang = require('./lib/lang');
+
+
+// 测试修改器
+assert('encode("<strong>")' == parser.filterVars('"<strong>"'))
+assert('raw(info.userName)' == parser.filterVars('=info.userName'))
+assert('cat(userName, "OK", 1)' == parser.filterVars('userName|cat:"OK":1'));
+assert('escapeJs(info.userName)' == parser.filterVars('-info.userName'))
+assert('raw(new Date().getDay())' == parser.filterVars('=new Date().getDay()'))
+assert('escape(info.userName, "html")' == parser.filterVars('info.userName|escape:"html"'))
+assert('encodeURIComponent(info.userName)' == parser.filterVars(':info.userName'))
+assert('escape("Hello, " + message, "html")' == parser.filterVars('"Hello, " + message|escape:"html"'))
+assert('truncate(({id:"mycoin"}).id, 3, "...")' == parser.filterVars('({id:"mycoin"}).id|truncate:3:"..."'))
+assert('foo("UA:" + lang.get("userAgent"), "arg")' == parser.filterVars('"UA:" + lang.get("userAgent")|foo:"arg"'))
+
+// 字符串量测试
+
+e = parser.removeShell(tpl, {
+    MIN: 1,
+    VARIABLE: 'string',
+    FILTER: 'encode',
+    LANG: 'lang'
+});
+
+console.log(pretty(e));
+
+render = parser.compile(tpl, {
+    PARAMS: [
+        'tplData',
+        'extData'
+    ],
+
+    MIN: 1,
+    VARIABLE: 'string',
+    FILTER: 'encode',
+    LANG: 'lang',
+    LANG_ENTRY: lang,
+    EXPORT: 'var template'
+});
+
+console.log(pretty(render.stringify()))
+// return 
+
+var data = {
+    name: "Activity",
+    title: "团队动态",
+    list: [{
+        date: "[06-22]",
+        title: "你喜欢九月吗，风和日丽的初秋"
+    }, {
+        date: "[07-27]",
+        title: "反物质原子结构现端倪"
+    }, {
+        date: "[04-24]",
+        title: "相信经常玩木马的朋友们，DLL木马揭秘"
+    }, {
+        date: "[05-06]",
+        title: "反物质原子结构现端倪"
+    }, {
+        date: "[05-17]",
+        title: "grub不能往MBR添加，否则会破坏Win7的激..."
+    }, {
+        date: "[05-29]",
+        title: "相信经常玩木马的朋友们，DLL木马揭秘"
+    }, {
+        date: "[06-10]",
+        title: "反物质原子结构现端倪"
+    }]
+};
+
+var html = render.render({
+    tplData: data,
+    extData: {id: 0}
+}, {
+    // lang: util
+});
+console.log(html)

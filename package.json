@@ -1,0 +1,27 @@
+{
+  "name": "mini-template",
+  "version": "0.0.1",
+  "description": "Yet another template engine in Javascript/NodeJS, adaptation AMD, CMD and client environment.",
+  "main": "template.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mycoin/mini-template.git"
+  },
+  "keywords": [
+    "template",
+    "mini-template",
+    "html"
+  ],
+  "author": "mycoin (nqliujiangtao@gmail.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mycoin/mini-template/issues"
+  },
+  "homepage": "https://github.com/mycoin/mini-template",
+  "devDependencies": {
+    "js-pretty": "0.0.2"
+  }
+}
