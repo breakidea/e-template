@@ -24,17 +24,42 @@
  * date:    2013/09/28
  * repos:   https://github.com/mycoin/mini-template
  */
-;(function (global, factory) {
-    //AMD and CMD.
-    typeof define === 'function' && define(factory);
-    
-    //Node.js and Browser `global`
-    (typeof exports !== 'undefined' ? exports : global).template = factory();
-    
-}(this, function () {
+(function(global, factory) {
+    if (typeof require == 'function' && typeof exports == 'object' && typeof module == 'object') {
+        // [1] CommonJS/Node.js
+        factory(module.exports || exports);
 
+    } else if (typeof define == 'function' && define.amd) {
+        // [2] AMD anonymous module
+        define(['exports'], factory);
+    } else {
+        // [3] browser-side, global
+        factory(global.template = global.template || {});
+    }
+}(this, function(exports) {
     // using strict mode
     'use strict';
+
+    /**
+     * Copy properties from the source object to the target object
+     *
+     * @public
+     * @param {Object} target the target object
+     * @param {Object} obj the source object
+     * @param {Boolean} overwrite if overwrite the same property, default 'true'
+     * @return target
+     */
+    function extend(target, obj, overwrite) {
+        if (undefined === overwrite) {
+            overwrite = true;
+        }
+        for (var key in obj || {}) {
+            if (obj.hasOwnProperty(key) && (overwrite || !target.hasOwnProperty(key))) {
+                target[key] = obj[key];
+            }
+        }
+        return target;
+    }
 
     /**
      * portal entry for template engine
@@ -46,41 +71,11 @@
      * @param {object=} data data JSON value
      * @return {string} the trimed string
      */
-    var template = function (source, data) {
-        var hash = getHash(source);
+    function template(source, data) {
         // read function from cache
-        var func = _cache[hash] = _cache[hash] || compile(source);
-        if (arguments.length == 2) {
-            return func.apply(data);
-        } else {
-            return func;
-        }
-    },
-
-    /**
-     * the collection the cache compiled template.
-     * @type Object
-     */
-    _cache = {},
-
-    /**
-     * Calculate the hash for a string.
-     * @public
-     *
-     * @param {string} string The string to Calculated
-     * @return {Number} result
-     */
-    getHash = function(string) {
-        var hash = 1,
-            code = 0;
-        for (var i = string.length - 1; i >= 0; i--) {
-            code = string.charCodeAt(i);
-            hash = (hash << 6 & 268435455) + code + (code << 14);
-            code = hash & 266338304;
-            hash = code != 0 ? hash ^ code >> 21 : hash;
-        };
-        return hash;
-    },
+        var exec = compile(source);
+        return exec.apply(data);
+    }
 
     /**
      * strip whitespace from the beginning and end of a string
@@ -91,45 +86,160 @@
      * @param {String} source the target string that will be trimmed.
      * @return {string} the trimed string
      */
-    trim = function(source) {
+    function trim(source) {
         return source.replace(/(^\s*)|(\s*$)/g, '');
-    },
+    }
 
     /**
-     * compile the source
-     * @example compile("<%this.userName%>");
+     * escape literal string.
+     * @e.g: change `<span id="OK">` to `"<span id=\"OK\">"`
      *
      * @param {string} string template'string
-     * @return {function} function cache
+     * @param {boolean=} strip strip empty line, enter.
+     * @return {string} slashed string
      */
-    compile = function (string) {
-        var limitation = /\<%(.+?)%\>/g,
-            keyword = /(^( )?(if|for|else|switch|case|break|{|}|;))(.*)?/g,
-            index = 0,
-            match,
-            source = '\tvar _ = "";';
+    function encodeLiteral(string, strip) {
+        string = string.replace(/((\/\*[\s\S]*?\*\/)|(\/\/.*$))/gm, '')
+            .replace(/\s*\n\s*/g, strip ? '' : '\\\n')
+            .replace(/"/g, '\\"');
+
+        return string ? '"' + string + '"' : false;
+    }
+
+    /**
+     * change modifier
+     * @e.g:
+     * <%userName%> //`encode(userName)`
+     * <%=info.userName%> //raw(info.userName)
+     * <%info.userName|escape:"html"%> //escape(info.userName, "html")
+     * @inner
+     * @param {string} string filter'string
+     * @see: https://gist.github.com/mycoin/f20d51986ba5878beb38
+     * @return
+     */
+    function filterVars(string, defaultFilter) {
+        var modifier = /(=|:|-)?([^|]*)\|?([^:]*)([\w\W]*)/;
+        var match = modifier.exec(string);
+        if (match && match[2]) {
+            var caller;
+            var param = '(' + match[2] + ')';
+            if (caller = match[3]) {
+                console.log(match)
+                param = '(' + match[2] + match[4].replace(/:/g, ', ') + ')';
+            }
+            caller = caller || {
+                '=': 'raw',
+                '-': 'escapeJs',
+                ':': 'encodeURIComponent'
+            }[match[1]] || defaultFilter;
+            return caller + param;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * remove placeholder, and return javascript source
+     * @e.g: change `<%id%>` to `result += global.encode(id);`
+     *
+     * @param {string} text template' string
+     * @param {object} config
+     * @param {boolean} config.strip, default `false`
+     * @param {string}  config.literalName, default `result`
+     * @param {string}  config.defaultFilter
+     * @return {string}
+     */
+    function removeShell(text, opt) {
+        var limitation = /\<%(.*?)%\>/g;
+        var keyword = /(^\s*(var|if|for|else|switch|case|break|{|}|;))(.*)?/g;
+        var i = 0; // 游标
+        var match = null;
+        var source;
 
         // push source snippets
-        var add = function(line, isJs) {
-            line = trim(line).replace("\n", "\\\n");
-            if(isJs) {
-                source += '\n\t' + (line.match(keyword) ? line : '_ += (' + line + ');');
+        var add = function(line, raw) {
+            if (raw) {
+                line = encodeLiteral(line, opt.strip);
+                if (line) {
+                    source += 'result += ' + line + ';\n';
+                }
             } else {
-                if (line.length > 0) {
-                    source += '\n\t_ += ("' + line.replace(/"/g, '\\"') + '");'
+                if (line.match(keyword)) {
+                    source += line + '\n';
+                } else {
+                    line = filterVars(line, opt.defaultFilter);
+                    if (line) {
+                        source += 'result += ' + 'util.' + line + ';\n';
+                    }
                 }
             }
+        };
+
+        text = text.replace(/\s*\r?\n/g, '\n');
+        source = 'var result = "";\nwith(data){\n';
+
+        while (match = limitation.exec(text)) {
+            add(text.slice(i, match.index), true); // raw
+            add(match[1], false); // js
+            i = match.index + match[0].length;
         }
-        while (match = limitation.exec(string)) {
-            add(string.slice(index, match.index), false);
-            add(match[1], true);
-            index = match.index + match[0].length;
-        }
-        
+
         // add last snippets
-        add(string.substr(index, string.length - index), false);
-        return new Function(source + '\n\treturn _;'); 
+        add(text.substr(i, text.length - i), true);
+        source += '};\nreturn result;';
+        return source;
+    }
+
+    /**
+     * compile tempalte to single function.
+     *
+     * @param {string} string template string
+     * @param {array} formal arguments' name
+     * @param {object} opt
+     * @return {function}
+     */
+    function compile(string, extract, opt) {
+        var source;
+        var config = {
+            defaultFilter: 'encode',
+            strip: true
+        };
+
+        opt = extend(opt || {}, config, false);
+        source = removeShell(string, opt);
+
+        // create function
+        if (extract.length < 1) {
+            extract = 'undefined';
+        }
+        console.log(source);
+        return new Function('util, data, _', source);
     };
 
-    return template;
+    /**
+     * render template my JSON
+     *
+     * @param {string} string template string
+     * @param {object} data
+     * @return {function}
+     */
+    function render(string, data, opt) {
+        var executor;
+
+        opt = opt || {};
+        if (!(opt.extract instanceof Array && opt.extract.length > 0)) {
+            throw "[Template] extract must be an array.";
+        }
+        var util = require('./lib/util');
+        executor = compile(string, opt.extract);
+        return executor.call(null, util, data);
+    }
+
+
+
+    exports.version = '1.0.0';
+    exports.compile = compile;
+    exports.render = render;
+
+    return exports;
 }));
