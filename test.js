@@ -25,7 +25,19 @@
  * repos:   https://github.com/mycoin/mini-template
  */
 var fs = require('fs');
+
+var achieve = require('./lib/achieve');
+var path = require('path');
+
+e = achieve.generate('index.html', {
+    saveFile: 1
+});
+
+
 var template = require('./template');
+var parser = require('./lib/parser');
+var lang = require('./lib/lang');
+
 var pretty = require("js-pretty").pretty;
 var tpl = fs.readFileSync('index.html', 'utf-8');
 
@@ -48,50 +60,46 @@ function assert(condition, optMessage) {
     }
 }
 
-var parser = require('./lib/parser');
-var lang = require('./lib/lang');
-
-
 // 测试修改器
-assert('encode("<strong>")' == parser.filterVars('"<strong>"'))
-assert('raw(info.userName)' == parser.filterVars('=info.userName'))
-assert('cat(userName, "OK", 1)' == parser.filterVars('userName|cat:"OK":1'));
-assert('escapeJs(info.userName)' == parser.filterVars('-info.userName'))
-assert('raw(new Date().getDay())' == parser.filterVars('=new Date().getDay()'))
-assert('escape(info.userName, "html")' == parser.filterVars('info.userName|escape:"html"'))
-assert('encodeURIComponent(info.userName)' == parser.filterVars(':info.userName'))
-assert('escape("Hello, " + message, "html")' == parser.filterVars('"Hello, " + message|escape:"html"'))
-assert('truncate(({id:"mycoin"}).id, 3, "...")' == parser.filterVars('({id:"mycoin"}).id|truncate:3:"..."'))
-assert('foo("UA:" + lang.get("userAgent"), "arg")' == parser.filterVars('"UA:" + lang.get("userAgent")|foo:"arg"'))
+assert('encode("<strong>")' == parser._filterVars('"<strong>"'))
+assert('raw(info.userName)' == parser._filterVars('=info.userName'))
+assert('cat(userName, "OK", 1)' == parser._filterVars('userName|cat:"OK":1'));
+assert('escapeJs(info.userName)' == parser._filterVars('-info.userName'))
+assert('raw(new Date().getDay())' == parser._filterVars('=new Date().getDay()'))
+assert('escape(info.userName, "html")' == parser._filterVars('info.userName|escape:"html"'))
+assert('encodeURIComponent(info.userName)' == parser._filterVars(':info.userName'))
+assert('escape("Hello, " + message, "html")' == parser._filterVars('"Hello, " + message|escape:"html"'))
+assert('truncate(({id:"mycoin"}).id, 3, "...")' == parser._filterVars('({id:"mycoin"}).id|truncate:3:"..."'))
+assert('foo("UA:" + lang.get("userAgent"), "arg")' == parser._filterVars('"UA:" + lang.get("userAgent")|foo:"arg"'))
 
 // 字符串量测试
 
-e = parser.removeShell(tpl, {
-    MIN: 1,
-    VARIABLE: 'string',
-    FILTER: 'encode',
-    LANG: 'lang'
+e = parser._removeShell(tpl, {
+    min: 1,
+    variable: 'string',
+    filter: 'encode',
+    lang: 'lang'
 });
 
-console.log(pretty(e));
+
 
 render = parser.compile(tpl, {
-    PARAMS: [
+    parameters: [
         'tplData',
         'extData'
     ],
 
-    MIN: 1,
-    VARIABLE: 'string',
-    FILTER: 'encode',
-    LANG: 'lang',
-    LANG_ENTRY: lang,
-    EXPORT: 'var template'
+    min: 1,
+    variable: 'string',
+    filter: 'encode',
+    utilEntry: lang,
+    prefix: '"use strict"' ,
 });
 
-console.log(pretty(render.stringify()))
-// return 
+var fn = pretty(render.stringify('this.renderCard'));
 
+
+// return
 var data = {
     name: "Activity",
     title: "团队动态",
@@ -122,7 +130,5 @@ var data = {
 var html = render.render({
     tplData: data,
     extData: {id: 0}
-}, {
-    // lang: util
 });
 console.log(html)

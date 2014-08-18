@@ -235,8 +235,6 @@
         return executor.call(null, util, data);
     }
 
-
-
     exports.version = '1.0.0';
     exports.compile = compile;
     exports.render = render;
