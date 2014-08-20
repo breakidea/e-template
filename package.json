@@ -22,7 +22,6 @@
   },
   "homepage": "https://github.com/mycoin/mini-template",
   "dependencies": {
-    "meta-config": "0.0.2",
     "js-pretty": "0.0.2"
   }
 }

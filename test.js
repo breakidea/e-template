@@ -25,20 +25,43 @@
  * repos:   https://github.com/mycoin/mini-template
  */
 var fs = require('fs');
+path = require('path'),
+template = require('./template'),
+parser = require('./lib/parser'),
+lang = require('./lib/lang'),
+pretty = require("js-pretty").pretty;
+
+
+var tpl = fs.readFileSync('index.html', 'utf-8');
+var body = parser.removeShell(tpl, {
+    min: 1,
+    lang: 'lang',
+    variable: 'result'
+});
+
+var conv = parser.convertBody(body, true, {
+    prefix: '//start',
+    suffix: '//End',
+    variable: 'result',
+});
+
+var fn = parser.compileAll(conv, ['lang', 'tplData']);
+
+console.log(fn + '');
+
+
+
+return;
+
 
 var achieve = require('./lib/achieve');
-var path = require('path');
 
 e = achieve.generate('index.html', {
     saveFile: 1
 });
 
 
-var template = require('./template');
-var parser = require('./lib/parser');
-var lang = require('./lib/lang');
 
-var pretty = require("js-pretty").pretty;
 var tpl = fs.readFileSync('index.html', 'utf-8');
 
 /**
@@ -93,7 +116,7 @@ render = parser.compile(tpl, {
     variable: 'string',
     filter: 'encode',
     utilEntry: lang,
-    prefix: '"use strict"' ,
+    prefix: '"use strict"',
 });
 
 var fn = pretty(render.stringify('this.renderCard'));
@@ -129,6 +152,8 @@ var data = {
 
 var html = render.render({
     tplData: data,
-    extData: {id: 0}
+    extData: {
+        id: 0
+    }
 });
 console.log(html)
