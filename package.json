@@ -4,7 +4,7 @@
   "description": "Yet another template engine in Javascript/NodeJS, adaptation AMD, CMD and client environment.",
   "main": "template.js",
   "scripts": {
-    "test": "grunt test"
+    "test": "node test/index.js"
   },
   "repository": {
     "type": "git",
