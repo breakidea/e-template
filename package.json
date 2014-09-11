@@ -1,5 +1,5 @@
 {
-  "name": "mini-template",
+  "name": "x-templator",
   "version": "0.0.1",
   "description": "Yet another template engine in Javascript/NodeJS, adaptation AMD, CMD and client environment.",
   "main": "template.js",
@@ -8,19 +8,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mycoin/mini-template.git"
+    "url": "https://github.com/mycoin/x-templator.git"
   },
   "keywords": [
     "template",
-    "mini-template",
+    "x-templator",
+    "format string",
     "html"
   ],
   "author": "mycoin (nqliujiangtao@gmail.com)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mycoin/mini-template/issues"
+    "url": "https://github.com/mycoin/x-templator/issues"
   },
-  "homepage": "https://github.com/mycoin/mini-template",
+  "homepage": "https://github.com/mycoin/x-templator",
   "dependencies": {
     "js-pretty": "0.0.2"
   }
