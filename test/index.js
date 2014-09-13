@@ -53,7 +53,7 @@ for (var k in configFile) {
 
 // 测试去除占位符
 var tpl = tool.getCases('shell');
-for(var k in tpl) {
+for (var k in tpl) {
     item = tpl[k];
     result = pretty(lib.convert(item.tpl));
     try {
@@ -65,16 +65,23 @@ for(var k in tpl) {
 }
 
 var co = tool.read('shell-component.tpl');
-var data = lib.parseMaster(co, 1);
-// var fun = pretty(lib.convert(data['x-template'].content));
+var data = tool.read('shell-component.json', 'JSON');
+var tpls = lib.parseMaster(co);
+// var fun = pretty(lib.convert(tpls['x-template'].content));
 // var fun = pretty();
 
 var opt = {
-    min: 1,
+    clean: 0,
     variable: 'html',
-    strip: false,
-    filter: 'encode'
+    strip: 0,
+    filter: 'encode',
+    raw: 0,
+    helper: fs.readFileSync('./x-tool.js', 'utf-8')
 };
+// var _ = {}
+var fns = lib.build(tpls, opt);
 
-console.log(lib.build(data, opt));
 
+console.log(pretty(fns['x-template'].toString()));
+// return
+console.log(fns['x-template'](data));

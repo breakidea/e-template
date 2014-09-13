@@ -36,8 +36,13 @@ exports.getCases = function(type) {
     }
 };
 
-exports.read = function(filename) {
-    return fs.readFileSync(dir + '/' + filename, 'utf-8');
+exports.read = function(filename, type) {
+    var content = fs.readFileSync(dir + '/' + filename, 'utf-8');
+    if (type == 'JSON') {
+        return JSON.parse(content);
+    } else {
+        return content;
+    }
 };
 
 // 分割字符串

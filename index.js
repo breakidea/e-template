@@ -24,11 +24,12 @@
  * date:    2014/09/09
  * repos:   https://github.com/mycoin/x-templator
  */
-;
 (function(global, undefined) {
 
     // exports
-    var exports = {};
+    var exports = {
+        version: '0.0.1'
+    };
 
     /**
      * Copy properties from the source object to the target object
@@ -69,7 +70,7 @@
     };
 
     // 拆解模板 <!--config: {"sync":true}-->
-    var REGEXP_MASTER = /\<\!\-\-\s*([\w\-]{1,}\s*:\s*\{.*?\})\s*\-\-\>/m;
+    var REGEXP_MASTER = /<!--\s*([\w\-]{1,}\s*:\s*\{.*?\})\s*-->/m;
 
     // 拆分配置 footer: {"section":"s-footer"}
     var REGEXP_CONFIG = /([\w\-]{1,})\s*:\s*(\{.*?\})/i;
@@ -79,7 +80,6 @@
      * 形如: <!--name: {"sync":true}-->
      *
      * @param {string} code 模板代码
-     * @param {boolean} strip 去除没有用的换行
      * @return {Object} 配置对象
      */
     var parseMaster = function(content, strip) {
@@ -94,9 +94,6 @@
                     name = RegExp.$1;
                     config = new Function('return ' + RegExp.$2)(); // 不使用 JSON.parse
                 } else if (name) {
-                    if (strip) {
-                        item = item.replace(/\s*\r?\n\s*/g, ''); // 删除换行
-                    }
                     config.content = trim(item);
                     config.name = name;
                     result[name] = config;
@@ -104,9 +101,6 @@
                 }
             }
         } else if (match[0]) {
-            if (strip) {
-                match[0] = match[0].replace(/\s*\r?\n\s*/g, ''); // 删除换行
-            }
             result.main = {
                 name: 'main',
                 content: trim(match[0])
@@ -116,7 +110,7 @@
     };
 
     var DEFAULT_CONFIG = {
-        min: 1,
+        clean: 1,
         variable: 'html',
         strip: 1,
         filter: 'encode'
@@ -128,32 +122,45 @@
     // 关键词语句
     var REGEXP_KEYWORD = /(^\s*(var|void|if|for|else|switch|case|break|{|}|;))(.*)?/g;
 
+    // 空白换行
+    var REGEXP_BLANK = /\s*\r?\n\s*/g;
+
+    // 只包括换行
+    var REGEXP_NEWLINE = /\r?\n/g;
+
+    // comment
+    var REGEXP_COMMENT = /<!--(?:[\s\S]*?)-->/g;
+
     /**
      * remove placeholder, and return javascript source
      * @e.g: change `<%id%>` to `result += global.encode(id);`
      *
      * @param {string} content template' string
      * @param {object} config
-     * @param {boolean} config.min, remove empty chars ? default `false`
+     * @param {boolean} config.clean, remove empty chars ? default `false`
      * @param {string}  config.variable
      * @param {string}  config.strip remove <!-- xxx -->
      * @param {string}  config.filter default html filter. default `encode`
      * @return {string}
      */
     var convert = function(content, opt) {
-        var i = 0; // 游标计数器
+        var offset = 0; // 游标计数器
         var match;
-        var source;
+        var source = '';
 
-        opt = extend(opt, DEFAULT_CONFIG);
+        opt = extend(opt, DEFAULT_CONFIG, false);
+
+        // start...
+        content = opt.strip ? content.replace(REGEXP_COMMENT, '') : content;
+        content = opt.clean ? content.replace(REGEXP_BLANK, '') : content;
 
         // push source snippets
-        var add = function(line, raw) {
+        var add = function(raw, line) {
             if (raw) {
                 line = line
                     .replace(/\\/g, '\\\\')
                     .replace(/"/g, '\\"')
-                    .replace(/\s*\n\s*/g, opt.min ? '' : '\\\n');
+                    .replace(REGEXP_NEWLINE, opt.clean ? '' : '\\n');
                 if (line) {
                     source += opt.variable + ' += "' + line + '";\n';
                 }
@@ -166,24 +173,16 @@
             }
         };
 
-        // start...
-        content = content.replace(/\s*\r?\n\s*/g, '\n');
-        source = '';
-        if (opt.strip) {
-            content = content.replace(/<!--(?:[\s\S]*?)-->/g, '');
-        }
-        if (opt.min) {
-            content = content.replace(/\s*\r?\n\s*/g, '');
-        }
         while (match = REGEXP_LIMITATION.exec(content)) { // jshint ignore:line
-            add(content.slice(i, match.index), true); // raw
-            add(match[1], false); // js
-            i = match.index + match[0].length;
+            add(1, content.slice(offset, match.index)); // raw
+            add(0, match[1]); // js
+            offset = match.index + match[0].length;
         }
 
         // add last snippets
-        add(content.substr(i, content.length - i), true);
+        add(1, content.substr(offset, content.length - offset));
 
+        // only soure
         return source;
     };
 
@@ -227,24 +226,46 @@
      * @see: https://gist.github.com/mycoin/f20d51986ba5878beb38
      * @return
      */
-    var build = function(config, opt, single) {
-        var result = {};
-        if (!single) {
-            for (var k in config) {
-                result[k] = build(config[k], opt, true);
+    var build = function(tpl, opt) {
+        if (tpl && typeof tpl == 'object') {
+            var result = {};
+            for (var k in tpl) {
+                var config = extend(tpl[k], opt, false);
+                var text = config.content;
+                if (typeof text == 'string') {
+                    delete config.content;
+                    result[k] = build(text, config);
+                }
             }
             return result;
-        }
-        if (config && typeof config == 'object') {
-            var tpl = config.content;
-            extend(config, extend(null, opt), false);
-            var src = convert(config.content, config);
+        } else {
+            if (opt.raw) {
+                return tpl; // do'not compile.
+            }
+            var src = convert(tpl, opt); // body源码
+            var pack = function() {
+                var head = 'data = data || {}; _ = _ || {};';
+                var body = src;
+                var tail = 'return ' + opt.variable + ';';
 
-            console.log(src);
-            return '';
+                head += opt.helper || ''; // 内建函数
+                if (opt.apply) {
+                    // 已知参数
+                    var applier = '';
+                    for (var i = 0; i < opt.apply.length; i++) {
+                        applier += 'var ' + opt.apply[i] + ' = data["' + opt.apply[i] + '"];';
+                    }
+                    head = head + applier;
+                } else {
+                    body = 'with(data){' + body + '}';
+                }
+                head += 'var ' + opt.variable + ' = "";';
+                return head + body + tail;
+            };
 
+            src = pack(src);
+            return new Function('data', '_', src);
         }
-        return result;
     };
 
     exports.parseMaster = parseMaster;
@@ -265,97 +286,4 @@
         // [3] browser-side, global
         global.xTemplator = global.xTemplator || exports;
     }
-
-
-    // /**
-    //  * compile template to javascript.
-    //  *
-    //  * @param {string} text template' string
-    //  * @param {object} config
-    //  * @param {boolean} config.min, remove empty chars ? default `false`
-    //  * @param {string}  config.variable
-    //  * @param {array=}  config.parameters format parammer' array, otherwise using `with(){...}`
-    //  * @param {string=}  config.filter default html filter. default `encode`
-    //  * @param {string=}  config.prefix custom source code.
-    //  * @param {object=}  config.utilEntry entry for lang.
-    //  * @return {object}
-    //  */
-    // var compile = function(text, opt) {
-    //     var prefix = (opt.lang || '') + 'var ' + opt.variable + ' = "";\n';
-    //     var tail = 'return ' + opt.variable + ';';
-    //     var argv = ['data'];
-
-    //     // 源码
-    //     var src = prefix + 'with(data){' + _removeShell(text, opt) + '}' + tail;
-
-    //     // add wrapper
-    //     var func = new Function(argv, src); // jshint ignore:line
-
-    //     // return object
-    //     return {
-    //         /**
-    //          * stringify function
-    //          * @e.g: stringify('this.renderComdi');
-    //          *
-    //          * @param {string|function|=} data JSON data
-    //          * @return {string}
-    //          */
-    //         stringify: function(variable) {
-    //             var funcSrc = 'function ' + (func + '').substr(18);
-    //             var receiver = variable;
-
-    //             if (typeof receiver == 'string') {
-    //                 // conversion to `var xxx = `
-    //                 return receiver + ' = ' + funcSrc + ';';
-    //             } else {
-    //                 return funcSrc;
-    //             }
-    //         }
-    //     };
-    // };
-
-    // /**
-    //  * coonfig achieves
-    //  *
-    //  * @public
-    //  * @param {string} source source code
-    //  * @param {string} begin begin flag
-    //  * @param {string} end end flag
-    //  *
-    //  * @return source
-    //  */
-    // var generate = function(tpl, opt) {
-    //     var lang = '';
-    //     if (opt.innerLang) {
-    //         lang = __dirname + '/lang.js';
-    //         lang = 'var _ = {}; \n' + fs.readFileSync(__dirname + '/x-template-lang.js', 'utf-8');
-    //     }
-    //     opt = extend(opt, {
-    //         min: 1,
-    //         variable: 'html',
-    //         lang: lang,
-    //         filter: 'encode'
-    //     }, false);
-    //     return compile(tpl, opt).stringify(opt.prefix);
-    // };
-
-    // exports.parseMaster = parseMaster;
-    // exports.convert = convert;
-
-    // // private
-    // exports._filterVars = _filterVars;
-
-    // if (typeof require == 'function' && typeof exports == 'object' && typeof module == 'object') {
-    //     // [1] CommonJS/Node.js
-    //     module.exports = exports;
-
-    // } else if (typeof define == 'function' && define.amd) {
-    //     // [2] AMD anonymous module
-    //     define(['exports'], function() {
-    //         return exports;
-    //     });
-    // } else {
-    //     // [3] browser-side, global
-    //     global.xTemplator = global.xTemplator || exports;
-    // }
 })(this);
