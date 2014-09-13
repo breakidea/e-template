@@ -23,6 +23,6 @@
   },
   "homepage": "https://github.com/mycoin/x-templator",
   "dependencies": {
-    "js-pretty": "0.0.2"
+    "js-pretty": "^1.0.0"
   }
 }

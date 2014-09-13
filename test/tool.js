@@ -6,9 +6,10 @@ var dir = path.resolve(__dirname, 'case');
 var caseMap = {};
 fs.readdirSync(dir).forEach(function(filename) {
     var exec;
-    if (exec = /^((config)\-(.*?))\.(json|tpl)$/.exec(filename)) {
+    if (exec = /^((config|shell)\-(.*?))\.(json|tpl|js)$/.exec(filename)) {
         if (!caseMap[exec[1]]) {
             caseMap[exec[1]] = {
+                jsFile: dir + '/' + exec[1] + '.js',
                 tplFile: dir + '/' + exec[1] + '.tpl',
                 jsonFile: dir + '/' + exec[1] + '.json'
             };
@@ -33,6 +34,10 @@ exports.getCases = function(type) {
     } else {
         return caseMap;
     }
+};
+
+exports.read = function(filename) {
+    return fs.readFileSync(dir + '/' + filename, 'utf-8');
 };
 
 // 分割字符串

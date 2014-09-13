@@ -3,6 +3,7 @@ var path = require('path');
 
 var lib = require('../');
 var tool = require('./tool');
+var pretty = require('js-pretty');
 
 /**
  * Simple common assertion API
@@ -41,15 +42,39 @@ var configFile = tool.getCases('config');
 var item, result, expect;
 for (var k in configFile) {
     item = configFile[k];
-    result = lib.parseMaster(item.tpl);
+    result = lib.parseMaster(item.tpl, 1);
     try {
         assert(JSON.stringify(result) == item.json)
     } catch (e) {
-        fs.writeFileSync(item.jsonFile, JSON.stringify(result));
+        // fs.writeFileSync(item.jsonFile, JSON.stringify(result));
         console.error(e);
     };
 }
 
+// 测试去除占位符
+var tpl = tool.getCases('shell');
+for(var k in tpl) {
+    item = tpl[k];
+    result = pretty(lib.convert(item.tpl));
+    try {
+        assert(result == item.js)
+    } catch (e) {
+        fs.writeFileSync(item.jsFile, result);
+        // console.log(e);
+    };
+}
 
+var co = tool.read('shell-component.tpl');
+var data = lib.parseMaster(co, 1);
+// var fun = pretty(lib.convert(data['x-template'].content));
+// var fun = pretty();
 
+var opt = {
+    min: 1,
+    variable: 'html',
+    strip: false,
+    filter: 'encode'
+};
+
+console.log(lib.build(data, opt));
 
