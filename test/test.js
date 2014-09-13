@@ -24,6 +24,7 @@
  * date:    2013/09/28
  * repos:   https://github.com/mycoin/mini-template
  */
+
 var fs = require('fs');
 path = require('path'),
 template = require('./template'),
@@ -55,7 +56,7 @@ return;
 
 
 var achieve = require('./lib/achieve');
-
+ 
 e = achieve.generate('index.html', {
     saveFile: 1
 });
