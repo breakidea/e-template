@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 
-var main = require('../');
+var lib = require('../');
 var tool = require('./tool');
 
 /**
@@ -24,20 +24,32 @@ function assert(condition, optMessage) {
 }
 
 // 测试修改器
-assert('encode("<strong>")' == main._filterVars('"<strong>"'))
-assert('raw(info.userName)' == main._filterVars('=info.userName'))
-assert('cat(userName, "OK", 1)' == main._filterVars('userName|cat:"OK":1'));
-assert('escapeJs(info.userName)' == main._filterVars('-info.userName'))
-assert('raw(new Date().getDay())' == main._filterVars('=new Date().getDay()'))
-assert('escape(info.userName, "html")' == main._filterVars('info.userName|escape:"html"'))
-assert('encodeURIComponent(info.userName)' == main._filterVars(':info.userName'))
-assert('escape("Hello, " + message, "html")' == main._filterVars('"Hello, " + message|escape:"html"'))
-assert('truncate(({id:"mycoin"}).id, 3, "...")' == main._filterVars('({id:"mycoin"}).id|truncate:3:"..."'))
-assert('foo("UA:" + lang.get("userAgent"), "arg")' == main._filterVars('"UA:" + lang.get("userAgent")|foo:"arg"'))
+assert('encode("<strong>")' == lib._filterVars('"<strong>"'));
+assert('raw(info.userName)' == lib._filterVars('=info.userName'));
+assert('cat(userName, "OK", 1)' == lib._filterVars('userName|cat:"OK":1'));;
+assert('escapeJs(info.userName)' == lib._filterVars('-info.userName'));
+assert('raw(new Date().getDay())' == lib._filterVars('=new Date().getDay()'));
+assert('escape(info.userName, "html")' == lib._filterVars('info.userName|escape:"html"'));
+assert('encodeURIComponent(info.userName)' == lib._filterVars(':info.userName'));
+assert('escape("Hello, " + message, "html")' == lib._filterVars('"Hello, " + message|escape:"html"'));
+assert('truncate(({id:"mycoin"}).id, 3, "...")' == lib._filterVars('({id:"mycoin"}).id|truncate:3:"..."'));
+assert('foo("UA:" + _.get("userAgent"), "arg")' == lib._filterVars('"UA:" + _.get("userAgent")|foo:"arg"'));
 
 
-var configCase = tool.getCases('config');
-for(var k in configCase) {
-    var conf = main.parseMaster(configCase[k], 'target')
-    console.log(conf);
+// 测试拆解函数
+var configFile = tool.getCases('config');
+var item, result, expect;
+for (var k in configFile) {
+    item = configFile[k];
+    result = lib.parseMaster(item.tpl);
+    try {
+        assert(JSON.stringify(result) == item.json)
+    } catch (e) {
+        fs.writeFileSync(item.jsonFile, JSON.stringify(result));
+        console.error(e);
+    };
 }
+
+
+
+
