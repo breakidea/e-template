@@ -1,0 +1,255 @@
+{
+    "platform": {
+        "options": [{
+            "text": "全部",
+            "value": "手表",
+            "selected": 0
+        }, {
+            "text": "走秀网",
+            "value": "走秀网",
+            "selected": 1
+        }, {
+            "text": "寺库网",
+            "value": "寺库网",
+            "selected": 0
+        }, {
+            "text": "谷网手表商城",
+            "value": "谷网手表商城",
+            "selected": 0
+        }, {
+            "text": "魅力惠",
+            "value": "魅力惠",
+            "selected": 0
+        }, {
+            "text": "万表网",
+            "value": "万表网",
+            "selected": 0
+        }, {
+            "text": "唯品会",
+            "value": "唯品会",
+            "selected": 0
+        }, {
+            "text": "聚美优品",
+            "value": "聚美优品",
+            "selected": 0
+        }]
+    },
+    "list": [
+
+        {
+            "unitid": "640477722",
+            "planid": "18581386",
+            "userid": "3032926",
+            "brandname": "卡地亚",
+            "brandename": "卡地亚",
+            "title": "卡地亚腕表  品质与品位",
+            "btntext": "",
+            "rebate": "<em>3.8</em>折起",
+            "promotion": "国际大牌奢品   寺库网低折抢购",
+            "url": "http://db-rdqa-pool221.db01.baidu.com:8765/zhixin.php?url=Ks0000ax-yUZ7BKPiJ4d_z6ZKysrIDNKpHweVSaclVM93u38kZkMAoseZ2_372ZT9e60u6rwTHRuLvz4LLVaklSnOafpcNvCuQgzD1tk-iSmrzR1xq93hkcY4q_F2GatY64_-U3.DR_iRgkY52PnQMc63ApDPim3POZ5EenqhX15uMo1vuenqXX815uM_OFLsRP5QAeKPa-BqM764paIQQS8a9G4I2UM3PQDrrZo6CpXy6hUik9H33IhOjxEsGLmI-vZxYqT7jHzs8BCFBCnmRe_QrEjX19H8sL_3IOZaMx9LSr7-MaMu9EenQPLgKfYt_QrMAzONDk9H33ISOjXMaMI9Eus_qr75W9vUtPSOaMI9vgmIOHdCq8jikbtX88uv-BPrM-Eukmry6Mizqi_nYQZZIYvI60.THL2doZV0Zwzmyw-pyfqPW0snsKWULPYgLF9Uh_qn0K1IyFkpyfqnHfsrH0zPHcdnjR3nWT4nfK-IZ-suHYY0ANGujYvPj0YP1TLnWc0uyw-TvPGujYzrj0kPjczn1640AP_pyPogLw4TARqn0KsUWYk0Zw-ThdGUh7_5H00XMfqTZn0TZ0q0A7bpyfqnH03rjTLnjmsnH60pgPxIv-zuyk-TLnqn0KWThnqnHD1PHf",
+            "ideatype": "0",
+            "mid": "2801422389",
+            "unitname": "腕表",
+            "unitbid": "1.30",
+            "stime": "1408291200",
+            "etime": "1413990000",
+            "cateid": "4",
+            "products": "",
+            "real_brandid": [
+                "645897459244589855"
+            ],
+            "real_brandname": [
+                "卡地亚"
+            ],
+            "label": [{
+                "url": "http://cq02-ecom-vsarch-dea004.cq02.baidu.com:8501/ecomui/Temai?controller=Index&action=index&qid=14881383565433504281&tn=baidu&zt=ps&pvid=1409025250582791&wd=%E5%8D%A1%E5%9C%B0%E4%BA%9A&manchor=1&cardid=29110&cateid=4",
+                "text": "卡地亚"
+            }],
+            "timespan": "08月18日-10月22日",
+            "source": "寺库网",
+            "platicon": "http://t11.baidu.com/it/u=3831078367,1046218338&amp;fm=58",
+            "sourceid": "280",
+            "sourcelogo": "",
+            "ulevel": "1",
+            "brandlogo": "http://bcscdn.baidu.com/resource/fFhOZUjSBUVRuWZMlpP_XWRYuUkSBIASlp0_NFVOZUhLBmgYZWCaBg.jpg",
+            "imgurl": "http://bcscdn.baidu.com/resource/fFhOZUjSBmVMBmjMlpP_XWRIZWZauUAYlp0_NFVOZUhLBIALBIgLuh.jpg",
+            "imgpsurl": "http://bcscdn.baidu.com/resource/fFhOZUjSBmgLuWsqlpP_XWRIZWZauUAYlp0_NFVOZUhLBIALBIgLBj.jpg",
+            "imgpsurl_s": "http://bcscdn.baidu.com/resource/fFhOZUjYZmkqBIhblpP_XWRSBIjauWsYlp0_NFVOZUhLBIkaBmhLBh.jpg",
+            "rebate_origin": "3.8折起",
+            "rebate_cut": "3.8折起",
+            "material_type": 1,
+            "biz_result": 1,
+            "ideaid": "2801422389",
+            "price": 1.11,
+            "winfoid": "10887706018",
+            "activityid": "0",
+            "bid": 1.3,
+            "inner_pos": 2,
+            "wordid": 1376991434,
+            "wmatch": 63,
+            "word": "手表",
+            "last_day": 0,
+            "focus": 0,
+            "yhq": "",
+            "sparams": "fbd9lUAxKwHKtJ94UNvItn%2FkjzhQ805v%2B137dxxpl8rtZDpPHjbM7H2MZUlelv1oS0bklfWrb1%2BlyUDcQvXEPkOGbG290JCcv5xvMJ%2Fk8gJmrCrGSsoH%2BKmb1lgzW4z9wbqiZ3zKwQ4DrHoFtV04%2Fp9QJl2bTIHoXalp4SKepnM3gKS6CBX0BDT07kLdGFVhLc3XxGJL%2Bre523AM0sdz8PpIyHkheWJdeWJjstF3xaRcm%2B9W5%2BJ58yIkuywfodxcL5Rb9qIgoavb2lHy5FjIrss33r6ZNNaJDOLk3E3icYfQrpjFAAqsfVgM4pBkYgZnFWTe6heWN09M2tgutF%2BCDSij0y0kak1bphgY8b455iRyqyn2kCqYS5CasHO%2B5xbNUJnvSklwSUu0h2RtOOK%2Fh0wj77e2dYyzK9GzgjoAuj%2FNGTeXC53QQ6i0ngrmmz3%2FxhvA6kOw74DeL0gaoB0nTAlYSuK3H3XHle17OPEvBD3L3dp3okbBqJhjIqgWEPdHcdsES%2BabvlxjFko4Kcd9Jcl0%2Fd8JBwIWh5TC7kZ0%2BAjp%2B1%2FeZJZFq9WihYqTd47LI8vRGOacHi1rxKCWvz9y2m%2FmX78J%2FXg5Vs2xjJh%2B6Pl0fv7Fg8uQEbO3d9S%2BSMn0sKwNoiy2XkikbtAGOG%2FLv%2BnwOeG1XLCcGPFyQFl9xek3fi9iapCosvrkNMtTfBCtBppDtn%2FW2ZV4n4f%2BG1kboFS3ft8ckTYYvTxutaoyn%2Bgc6acsgl%2FYddPcSWQjZNCmoKwaN7M338OBGEQZHcYk8%2FD%2FLjkpByfi5GIG%2F1USSy4lUX0",
+            "focusid": "2801422389",
+            "left_day": 58,
+            "lasttime": "最后58天",
+            "remain": "最后58天"
+        }, {
+            "unitid": "640804183",
+            "planid": "18695163",
+            "userid": "3032926",
+            "brandname": "浪琴",
+            "brandename": "浪琴",
+            "title": "浪琴腕表  高贵大气",
+            "btntext": "",
+            "rebate": "<em>4.8</em>折起",
+            "promotion": "国际奢品 寺库热卖中",
+            "url": "http://db-rdqa-pool221.db01.baidu.com:8765/zhixin.php?url=Ks0000jdAypCkdu9PJAbLIUu0BaSwP-d11iSDRQ2r7i7B-EozWRnan5qXPgRgzC9Wan0JO_mBeW0Y07pOof5f6pB0H6KXILHkxoKxLBMUQUpT4pDDRh8d1LSHlQi7AjaA941R03.DD_iRgkY52PnQMc63ApDPim3POZ5gk34enqhX15gM_1vultqIhX15uSHE6CpXyPvap7Q7erQKzYDlygqT7jHzlRL5spycTT5gKfYtVKnv-WaMksePSAOx9H8seQ_rOGl32AM-9I7fH7fmsGLmyIXAqMaMI9EuseSr7rOjEtTQQr7r1jxvmyU88a9G4myIrP-SJFWaMkseqSAqr7rejX19ulT2xZj_L3UqS7rej_8seSMoweTA-WF3qIT1VQDpI5QX1BsTVKr--Sz8Vi_nYQZuvyuQ0.THL2doZV0Zwzmyw-pyfqPW0snsKWULPYgLF9Uh_qn0K1IyFkpyfqnHfsrH0zPHcdnjR3nWT4nfK-IZ-suHYY0ANGujYvPj03njfkrjn0uyw-TvPGujYzrj0YrHTsnW6d0AP_pyPogLw4TARqn0KsUWYk0Zw-ThdGUh7_5H00XMfqTZn0TZ0q0A7bpyfqnH04njmkrjnsrHb0pgPxIv-zuyk-TLnqn0KWThnqPWDkP1f",
+            "ideatype": "0",
+            "mid": "2804970285",
+            "unitname": "腕表",
+            "unitbid": "1.80",
+            "stime": "1407168000",
+            "etime": "1413903600",
+            "cateid": "4",
+            "products": "机械,自动,男式,女式,男士",
+            "real_brandid": [
+                "16693354968249316496"
+            ],
+            "real_brandname": [
+                "浪琴"
+            ],
+            "label": [{
+                "url": "http://cq02-ecom-vsarch-dea004.cq02.baidu.com:8501/ecomui/Temai?controller=Index&action=index&qid=14881383565433504281&tn=baidu&zt=ps&pvid=1409025250582791&wd=%E6%B5%AA%E7%90%B4&manchor=1&cardid=29110&cateid=4",
+                "text": "浪琴"
+            }],
+            "timespan": "08月05日-10月21日",
+            "source": "寺库网",
+            "platicon": "http://t11.baidu.com/it/u=3831078367,1046218338&amp;fm=58",
+            "sourceid": "280",
+            "sourcelogo": "",
+            "ulevel": "1",
+            "brandlogo": "http://bcscdn.baidu.com/resource/fFhOZUjbBUhqZmCalpP_XWRIBUsRBUgRlp0_NFVOZUZMuUVbBIhIuj.jpg",
+            "imgurl": "http://bcscdn.baidu.com/resource/fFhOZUjSBm8IBmjIlpP_XWRIZWZauUAYlp0_NFVOZUhLBIAIBWjLBj.jpg",
+            "imgpsurl": "http://bcscdn.baidu.com/resource/fFhOZUjSBmkRBIkalpP_XWRIZWZauUAYlp0_NFVOZUhLBIAIBWjLZh.jpg",
+            "imgpsurl_s": "http://bcscdn.baidu.com/resource/fFhOZUjYZUjLZIhalpP_XWRSBIjauWsYlp0_NFVOZUhLBI8RZmgbZj.jpg",
+            "rebate_origin": "4.8折起",
+            "rebate_cut": "4.8折起",
+            "material_type": 1,
+            "biz_result": 1,
+            "ideaid": "2804970285",
+            "price": 1.31,
+            "winfoid": "10906183099",
+            "activityid": "0",
+            "bid": 1.8,
+            "inner_pos": 1,
+            "wordid": 1376991434,
+            "wmatch": 63,
+            "word": "手表",
+            "last_day": 0,
+            "focus": 0,
+            "yhq": "",
+            "sparams": "1550jxmPEZQzXOPq1GvsIM%2FTFAgmGySp1zQQh%2FYxU51Bfa%2BFxSYP1VqP9OTMA2d0Tiqoh6tyh01OqXpr2Hq92myHgFvUkFxnfGRUInj2CZoiPvnxY4QtGRFihNShmdNgiXGpF8N5Qp9JYqGcsrhpku8p1IAmoZKekFSNrCqPj2hRH59MK5CuwobaVYXHoneVBaP9fNamVwRlvdg%2FUQjSYnWRZfgurn1vsDvwYA4qWnbDnN0jWZx0%2BBURZ6aRLko02YEUgcMaGmqqRhBC9Us1vaUZTqDcqjwwYUG9MVX%2FMpvItGiCKOOLJ3fOzjZ8%2BOyqfjZEPDvoyWGOe4rFVKxKliQunLYBIhT0bWraqvCWE2LXEX4%2BdN7ruaR8JVFh1yAxfvewpG77T83F%2BSlJ1hU7g7su9wChFEGyPcPwF2mMfaoQn7VLDtXkEReGl79eZypK0V8gALBWyLFdWizvR2WIC3%2BRUXQoHN5c1paXrxwV69c0qnfxr%2Bwxb73xVDSAy0xb2loutnSh9VGeoDiBsq%2BiJUUsjof2TZgGvYzPByC4%2BAax1FoDtMEFloc6RJ%2B0SDhqZ%2F0%2B8wRiTe31Zz8WhwsYhiwbUcreoSX9dQo7ZE45rfvZjNbbIdD6QvWdP1KK3ukb6cvbk7W%2BiaBJZ%2BE68ABFL%2B1wMOkhi3DQknThRblk5GSMu4%2FYVtgJIaGOiq7HqM3CrDnVCQZbL5%2FEbmng%2F%2Fpkt%2BrVFMiS8adaCUsQCbR8Iv0Z6SjaaI2GXXFJ%2BUlxAV89UqjHIA7wxrgsr12ITOgOIgjNPRMUjsC49qnhTEsFIV%2BCxIwuvq5%2F",
+            "focusid": "2804970285",
+            "left_day": 57,
+            "lasttime": "最后57天",
+            "remain": "最后57天"
+        }, {
+            "unitid": "654695723",
+            "planid": "18857247",
+            "userid": "5136536",
+            "brandname": "谷网",
+            "brandename": "谷网",
+            "title": "谷网",
+            "btntext": "",
+            "rebate": "<em>2</em>折起",
+            "promotion": "249元抢购瑞士手表",
+            "url": "http://db-rdqa-pool221.db01.baidu.com:8765/zhixin.php?url=Ks0000axpCbVyYuMBJtTlTzmirEclN-JeXvHjQsxChiaoMbSxTMST1UoLW6wJceXaPhpX5hh21BtxGj8VZtJz3qBlF1F7tHBoeDidXBQO7cNYDurt6vVHydtrdx-ed3C5eUcn9s.7b_jN6srTBa6eASAjFvXrxFKLWknTaglMm72s1f_Ih1xvTf.THL2doZV0Zwzmyw-pyfqPW0snsKWULPYgLF9Uh_qn0K1IyFkpyfqnHfsrH0zPHcdnjR3nWT4nfK-IZ-suHYY0ANGujYvPHfvrHRLnWn0uyw-TvPGujYzrHDsnWb3PWRk0AP_pyPogLw4TARqn0KsUWYk0Zw-ThdGUh7_5H00XMfqTZn0TZ0q0A7bpyfqnHDznWfLnHR3rjm0pgPxIv-zuyk-TLnqn0KWThnqnW03rjD",
+            "ideatype": "0",
+            "mid": "2910298651",
+            "unitname": "专题活动",
+            "unitbid": "1.50",
+            "stime": "1408032000",
+            "etime": "1409328000",
+            "cateid": "4",
+            "products": "双人,商务,黑色",
+            "real_brandid": [
+                "208695736"
+            ],
+            "real_brandname": [
+                "谷网"
+            ],
+            "label": [{
+                "url": "http://cq02-ecom-vsarch-dea004.cq02.baidu.com:8501/ecomui/Temai?controller=Index&action=index&qid=14881383565433504281&tn=baidu&zt=ps&pvid=1409025250582791&wd=%E8%B0%B7%E7%BD%91&manchor=1&cardid=29110&cateid=4",
+                "text": "谷网"
+            }],
+            "timespan": "08月15日-08月30日",
+            "source": "谷网手表商城",
+            "platicon": "http://bcscdn.baidu.com/resource/fFhOZUjSBUCSBUAYlpP_XWRSZUZYBUZYlp0_NFVOZUhLBmsbBWVIZg.jpg",
+            "sourceid": "293",
+            "sourcelogo": "",
+            "ulevel": "1",
+            "brandlogo": "http://bcscdn.baidu.com/resource/fFhOZUjYBWjLBmhYlpP_XWRSZUZYBUZYlp0_NFVOZUhLuWjLBUCwZh.jpg",
+            "imgurl": "http://bcscdn.baidu.com/resource/fFhOZUjYuUVwuUAMlpP_XWRSZUZYBUZYlp0_NFVOZUhLuWswBUsYZL.jpg",
+            "imgpsurl": "http://bcscdn.baidu.com/resource/fFhOZUjYuUgLBI8YlpP_XWRSZUZYBUZYlp0_NFVOZUhLuWswBUsRZh.jpg",
+            "rebate_origin": "2折起",
+            "rebate_cut": "2折起",
+            "material_type": 1,
+            "biz_result": 1,
+            "ideaid": "2910298651",
+            "price": 1.5,
+            "winfoid": "11224715886",
+            "activityid": "0",
+            "bid": 1.5,
+            "inner_pos": 3,
+            "wordid": 149441,
+            "wmatch": 0,
+            "word": "手表",
+            "last_day": 0,
+            "focus": 0,
+            "yhq": "",
+            "sparams": "7795IEgopHSopIlSpppS88HcANc6R5MB3Dax7iMh9Aeow%2FWxfJALAtxI4EbiAi6RoOsskGTV7GhU%2BsTn5aWvxPylquXMiJsLF43u2DWwueV0qI8pF%2BjCKtzw6%2BYCZI0X57dcNkkZtM3oeoPOuybXM%2FsHXuVKb998h2UwlL4AKycapHjlDRSOf703zqa0Vv%2FRGfWyZf1HX3oK06TFCIZRcrq8YJW7No%2BaE2%2FVjdSrBAZcuYughdKgQ1%2FXbNtehcoD7CbXmj%2F59%2FPTsArBGCpaxX4NXL2HpViHQFujj1MOS3GWKavRr99EgLEJny91QVIgA6w6%2FKp3EYPs63rTY7s3h%2BeBrXJSCqo2vdVRvW%2FO45uZKyMJ25FJRoCvwVfN9Hx3v1wCXFdQXa1X9ffN1NVyVGzSKjejOJRYLcmc54F17HgCR%2B2xvziQQO8Y7DWl6OOB1uzi5PKFql9hixohGXq5Zey%2BaAp%2FdAPAkrTjmAexUey5sqjzN1%2BBDW2bD1SCfapZL38dCKQNcHAu3U8",
+            "focusid": "2910298651",
+            "left_day": 4,
+            "lasttime": "最后4天",
+            "remain": "最后4天"
+        }
+    ],
+    "url_info": {
+        "more_url_cate": "http://temai.baidu.com/Index/index?qid=13261896486402221571&pssid=8513&tn=baidu&zt=ps&pvid=1409822661822352&manchor=1",
+        "more_url_platform": "http://temai.baidu.com/Index/index?qid=13261896486402221571&pssid=8513&tn=baidu&zt=ps&pvid=1409822661822352&manchor=1",
+        "ajax_url": "/ecomui/temai?controller=AjaxSearch&action=TagOfBrandList&qid=13261896486402221571&pssid=8513&tn=baidu&zt=ps&pvid=1409822661822352&cardid=29110"
+    },
+    "labels": false,
+    "labels_debug": false,
+    "current_tag": [],
+    "pager_info": {
+        "page_size": 3,
+        "total_page": 0,
+        "page": 1,
+        "total": 4,
+        "pagelist": []
+    },
+    "edition": 1,
+    "single_condi": false,
+    "time_sign": 70,
+    "common_info": {
+        "qid": "13261896486402221571",
+        "sub_qid": 1409822940567471,
+        "from": null,
+        "timestamp": 1409822940,
+        "sid": "ui:0&as:0&bs:0&qsvr:3",
+        "query": "内衣CK",
+        "fr": "",
+        "Pvid": "1409822661822352",
+        "Rqid": "1409822661822352",
+        "Pssid": "8513"
+    },
+    "user_info": {
+        "islogin": 1,
+        "btntext": "我的微购",
+        "btnlink": "http://zhixin.baidu.com/My/Index?module=onesite&from=weigou#weigou"
+    }
+}

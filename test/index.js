@@ -42,9 +42,9 @@ var configFile = tool.getCases('config');
 var item, result, expect;
 for (var k in configFile) {
     item = configFile[k];
-    result = lib.parseMaster(item.tpl, 1);
+    result = lib._parseTpl(item.tpl, 1);
     try {
-        assert(JSON.stringify(result) == item.json)
+        assert(JSON.stringify(result) == item.json);
     } catch (e) {
         // fs.writeFileSync(item.jsonFile, JSON.stringify(result));
         console.error(e);
@@ -54,19 +54,19 @@ for (var k in configFile) {
 var tpl = tool.getCases('shell');
 for (var k in tpl) {
     item = tpl[k];
-    result = pretty(lib.convert(item.tpl));
+    result = pretty(lib._convert(item.tpl));
     try {
-        assert(result == item.js)
+        assert(result == item.js);
     } catch (e) {
         fs.writeFileSync(item.jsFile, result);
-        // console.log(e);
+        console.log(e);
     };
 }
 
 var co = tool.read('shell-component.tpl');
 var data = tool.read('shell-component.json', 'JSON');
-var tpls = lib.parseMaster(co);
-// var fun = pretty(lib.convert(tpls['x-template'].content));
+var tpls = lib._parseTpl(co);
+// var fun = pretty(lib._convert(tpls['index'].content));
 // var fun = pretty();
 
 var opt = {
@@ -75,11 +75,17 @@ var opt = {
     strip: 0,
     filter: 'encode',
     raw: 0,
-    helper: fs.readFileSync('./x-tool.js', 'utf-8')
+    helper: require('../x-util'),
+    helper: fs.readFileSync('./x-util.source', 'utf-8')
 };
-var fns = lib.compile(tpls, opt);
+var fns = pretty(lib.compileMulti(co, opt, 'this'));
+fs.writeFileSync(__dirname + '/case/component-all.js', fns);
 
-// console.log(fns);
-console.log(pretty(fns['x-template'].toString()));
-return
-console.log(fns['x-template'](data));
+
+fns = lib.compileMulti(co, opt);
+fs.writeFileSync(__dirname + '/case/component.js', pretty(fns['footer'].stringify('this.render')));
+// console.log(pretty(fns['index'].stringify('render')));
+// console.log(fns['index'].render(data));
+
+
+console.log('OK');

@@ -82,7 +82,7 @@
      * @param {string} code 模板代码
      * @return {Object} 配置对象
      */
-    exports.parseMaster = function(content) {
+    var _parseTpl = function(content) {
         var match = content.split(REGEXP_MASTER);
         var result = {};
 
@@ -110,9 +110,10 @@
     };
 
     var CONFIG_DEFAULT = {
-        clean: 1,
+        clean: true,
+        helper: '_.raw=function(a){return a;};_.encode=function(a){return(a+"").replace(/&/g,"&amp;").replace(/\x3C/g,"&lt;").replace(/\x3E/g,"&gt;").replace(/"/g,"&quot;").replace(/\'/g,"&#39;")};',
         variable: 'html',
-        strip: 1,
+        strip: true,
         filter: 'encode'
     };
 
@@ -225,52 +226,119 @@
      * @see: https://gist.github.com/mycoin/f20d51986ba5878beb38
      * @return
      */
-    var _compile = function(tpl, opt) {
-        if (tpl && typeof tpl == 'object') {
-            var result = {};
-            for (var k in tpl) {
-                var config = extend(tpl[k], opt, false);
-                var text = config.content;
-                if (typeof text == 'string') {
-                    delete config.content;
-                    result[k] = _compile(text, config);
-                }
-            }
-            return result;
-        } else if (typeof tpl == 'string') {
-            if (opt.raw) {
-                return tpl; // do'not compile.
-            }
-            var src = _convert(tpl, opt); // body源码
-            var pack = function() {
-                var head = 'data = data || {}; _ = _ || {};';
-                var body = src;
-                var tail = 'return ' + opt.variable + ';';
+    var compileMulti = function(tpl, opt, stringify) {
+        var result = {};
+        var underscore = false;
 
-                head += opt.helper || ''; // 内建函数
-                if (opt.apply) {
-                    // 已知参数
-                    var applier = '';
-                    for (var i = 0; i < opt.apply.length; i++) {
-                        applier += 'var ' + opt.apply[i] + ' = data["' + opt.apply[i] + '"];';
-                    }
-                    head = head + applier;
-                } else {
-                    body = 'with(data){' + body + '}';
-                }
-                head += 'var ' + opt.variable + ' = "";';
-                return head + body + tail;
-            };
-            src = pack(src);
-            return new Function('data', '_', src);
+        if (typeof tpl == 'string') {
+            tpl = _parseTpl(tpl);
         }
+        if (stringify && typeof opt.helper == 'string') {
+            underscore = opt.helper;
+            // opt.helper = '_ = extend(_, this._);';
+            opt.helper = 'for(var k in this._){_[k] = this._[k];}';
+        }
+        for (var k in tpl) {
+            var temp = extend(tpl[k], opt, true); // 模板配置的优先级最低
+            var text = temp.content;
+            if (typeof text == 'string') {
+                delete temp.content;
+                result[k] = compile(text, temp);
+            }
+        }
+        if (stringify) {
+            var source = [];
+            underscore && source.push(stringify + '._ = (function(){var _ = {};' + underscore + ';return _;})();');
+            for (var k in result) {
+                source.push(result[k].stringify(stringify + '.' + k));
+            }
+            return source.join('');
+        }
+        return result;
     };
 
-    exports.convert = _convert;
-    exports.compile = _compile;
-    exports._filterVars = _filterVars;
+    /**
+     * install template, config into a callable function.
+     * @inner
+     * @param {string} tpl the template string
+     * @param {object=} defaul default encoding `encode`
+     * @see: https://gist.github.com/mycoin/f20d51986ba5878beb38
+     * @return
+     */
+    var compile = function(tpl, opt) {
+        opt = extend(opt, CONFIG_DEFAULT, false);
 
-    if (typeof require == 'function' && typeof exports == 'object' && typeof module == 'object') {
+        var body = _convert(tpl, opt); // body源码
+        var head = 'data = data || {}; _ = _ || {};';
+        var tail = 'return ' + opt.variable + ';';
+        var invoke;
+
+        head += typeof opt.helper == 'string' ? opt.helper : ''; // 内建函数
+        if (opt.apply) {
+            // 已知参数
+            for (var i = 0; i < opt.apply.length; i++) {
+                head += 'var ' + opt.apply[i] + ' = data["' + opt.apply[i] + '"] || {};';
+            }
+        } else {
+            body = 'with(data){' + body + '}';
+        }
+        head += 'var ' + opt.variable + ' = "";';
+        body = head + body + tail;
+        invoke = new Function('data', '_', body);
+
+        // extend render function.
+        extend(invoke, {
+            /**
+             * stringify executorFun
+             * @e.g: stringify('this.renderComdi');
+             *
+             * @param {string|function|=} data JSON data
+             * @return {string}
+             */
+            stringify: function(receiver) {
+                var code = invoke.toString().substr(18);
+                if (receiver && typeof receiver == 'string') {
+                    if (~receiver.lastIndexOf('.')) {
+                        // this.xxx = function...
+                        return receiver + ' = function ' + code + ';';
+                    } else {
+                        // function xxx() ...
+                        return 'function ' + receiver + ' ' + code;
+                    }
+                } else {
+                    return 'function ' + code;
+                }
+            },
+            /**
+             * render data
+             * @e.g: render(data, {lang: lang, context: this});
+             *
+             * @param {object} data JSON data
+             * @param {object=} config.min, remove empty chars ? default `false`
+             * @param {string=}  config.lang lang name
+             * @param {object=}  config.context context
+             * @return {string}
+             */
+            render: function(data, context) {
+                var util;
+                if (opt.helper && typeof opt.helper == 'object') {
+                    util = opt.helper;
+                }
+                return invoke.call(context, data, util) || '';
+            }
+        });
+        return invoke;
+    };
+
+    exports.config = CONFIG_DEFAULT;
+    exports.compile = compile;
+    exports.compileMulti = compileMulti;
+
+    exports._parseTpl = _parseTpl;
+    exports._filterVars = _filterVars;
+    exports._convert = _convert;
+
+    if (typeof require == 'function' && typeof module == 'object' && typeof module.exports == 'object') {
         // [1] CommonJS/Node.js
         module.exports = exports;
 
