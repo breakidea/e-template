@@ -60,14 +60,14 @@ var opt = {
 };
 var tpl = tool.getCases('shell');
 var data = tool.read('data.json', 'JSON');
-var lang = require('../x-util');
+var lang = require('./x-util');
 for (var k in tpl) {
     var item = tpl[k];
 
     if (k == 'shell-one') {
-        opt.helper = fs.readFileSync('./x-util.source', 'utf-8');
+        opt.helper = fs.readFileSync(__dirname + '/x-util.source', 'utf-8');
     } else {
-        opt.helper = require('../x-util');
+        opt.helper = require('./x-util');
     }
     var call = lib.compileMulti(item.tpl, opt);
     var source = call.get('index').stringify('renderIndex') + '; module.exports=renderIndex;';
