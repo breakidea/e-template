@@ -1,6 +1,6 @@
 {
   "name": "x-templator",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Yet another template engine in Javascript/NodeJS, adaptation AMD, CMD and client environment.",
   "main": "template.js",
   "scripts": {
