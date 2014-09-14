@@ -1,4 +1,4 @@
-<!--x-template:{"strip": true, "prefix": "cache.render", apply: ['list', 'title','platMore']}-->
+<!--x-template:{"clean": 0, apply: ['list', 'title','platMore']}-->
 <%if (list.length){%>
     <%for(var i = 0; i < list.length; i++){%>
         <%var item = list[i];%>

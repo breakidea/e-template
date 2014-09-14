@@ -82,7 +82,7 @@
      * @param {string} code 模板代码
      * @return {Object} 配置对象
      */
-    var parseMaster = function(content, strip) {
+    exports.parseMaster = function(content) {
         var match = content.split(REGEXP_MASTER);
         var result = {};
 
@@ -109,7 +109,7 @@
         return result;
     };
 
-    var DEFAULT_CONFIG = {
+    var CONFIG_DEFAULT = {
         clean: 1,
         variable: 'html',
         strip: 1,
@@ -117,7 +117,7 @@
     };
 
     // 占位符边界
-    var REGEXP_LIMITATION = /\<%(.*?)%\>/g;
+    var REGEXP_LIMITATION = /<%(.*?)%>/g;
 
     // 关键词语句
     var REGEXP_KEYWORD = /(^\s*(var|void|if|for|else|switch|case|break|{|}|;))(.*)?/g;
@@ -143,12 +143,12 @@
      * @param {string}  config.filter default html filter. default `encode`
      * @return {string}
      */
-    var convert = function(content, opt) {
+    var _convert = function(content, opt) {
         var offset = 0; // 游标计数器
         var match;
         var source = '';
 
-        opt = extend(opt, DEFAULT_CONFIG, false);
+        opt = extend(opt, CONFIG_DEFAULT, false);
 
         // start...
         content = opt.strip ? content.replace(REGEXP_COMMENT, '') : content;
@@ -162,17 +162,16 @@
                     .replace(/"/g, '\\"')
                     .replace(REGEXP_NEWLINE, opt.clean ? '' : '\\n');
                 if (line) {
-                    source += opt.variable + ' += "' + line + '";\n';
+                    source += opt.variable + ' += "' + line + '";';
                 }
             } else {
                 if (line.match(REGEXP_KEYWORD)) {
-                    source += line + '\n';
+                    source += line;
                 } else if (line = _filterVars(line, opt.filter)) {
-                    source += opt.variable + ' += _.' + line + ';\n';
+                    source += opt.variable + ' += _.' + line + ';';
                 }
             }
         };
-
         while (match = REGEXP_LIMITATION.exec(content)) { // jshint ignore:line
             add(1, content.slice(offset, match.index)); // raw
             add(0, match[1]); // js
@@ -226,7 +225,7 @@
      * @see: https://gist.github.com/mycoin/f20d51986ba5878beb38
      * @return
      */
-    var build = function(tpl, opt) {
+    var _compile = function(tpl, opt) {
         if (tpl && typeof tpl == 'object') {
             var result = {};
             for (var k in tpl) {
@@ -234,15 +233,15 @@
                 var text = config.content;
                 if (typeof text == 'string') {
                     delete config.content;
-                    result[k] = build(text, config);
+                    result[k] = _compile(text, config);
                 }
             }
             return result;
-        } else {
+        } else if (typeof tpl == 'string') {
             if (opt.raw) {
                 return tpl; // do'not compile.
             }
-            var src = convert(tpl, opt); // body源码
+            var src = _convert(tpl, opt); // body源码
             var pack = function() {
                 var head = 'data = data || {}; _ = _ || {};';
                 var body = src;
@@ -262,15 +261,13 @@
                 head += 'var ' + opt.variable + ' = "";';
                 return head + body + tail;
             };
-
             src = pack(src);
             return new Function('data', '_', src);
         }
     };
 
-    exports.parseMaster = parseMaster;
-    exports.build = build;
-    exports.convert = convert;
+    exports.convert = _convert;
+    exports.compile = _compile;
     exports._filterVars = _filterVars;
 
     if (typeof require == 'function' && typeof exports == 'object' && typeof module == 'object') {

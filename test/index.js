@@ -50,7 +50,6 @@ for (var k in configFile) {
         console.error(e);
     };
 }
-
 // 测试去除占位符
 var tpl = tool.getCases('shell');
 for (var k in tpl) {
@@ -78,10 +77,9 @@ var opt = {
     raw: 0,
     helper: fs.readFileSync('./x-tool.js', 'utf-8')
 };
-// var _ = {}
-var fns = lib.build(tpls, opt);
+var fns = lib.compile(tpls, opt);
 
-
-console.log(pretty(fns['x-template'].toString()));
+// console.log(fns);
+// console.log(pretty(fns['x-template'].toString()));
 // return
 console.log(fns['x-template'](data));
