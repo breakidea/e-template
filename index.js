@@ -1,24 +1,6 @@
 /*
  * Copyright 2014 Baidu Inc. All rights reserved.
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
  * file:    index.js
  * author:  mycoin (nqliujiangtao@gmail.com)
  * date:    2014/09/09
@@ -51,27 +33,6 @@
             }
         }
         return target;
-    };
-
-
-    /**
-     * Calculate the hash for a string.
-     * @public
-     *
-     * @param {String} string The string to Calculated
-     * @return {Number} result
-     */
-    var getHash = function(string) {
-        var hash = 1,
-            code = 0,
-            string = String(string);
-        for (var i = string.length - 1; i >= 0; i--) {
-            code = string.charCodeAt(i);
-            hash = (hash << 6 & 268435455) + code + (code << 14);
-            code = hash & 266338304;
-            hash = code != 0 ? hash ^ code >> 21 : hash;
-        };
-        return hash;
     };
 
     /**
@@ -113,7 +74,9 @@
                 var item = match[i];
                 if (REGEXP_CONFIG.test(item)) {
                     name = RegExp.$1;
-                    config = new Function('return ' + RegExp.$2)(); // 不使用 JSON.parse
+
+                    // 不使用 JSON.parse 
+                    config = new Function('return ' + RegExp.$2)(); // jshint ignore:line
                 } else if (name) {
                     config.content = trim(item);
                     config.name = name;
@@ -189,7 +152,7 @@
             } else {
                 if (line.match(REGEXP_KEYWORD)) {
                     source += line;
-                } else if (line = _filterVars(line, opt.filter)) {
+                } else if (line = _filterVars(line, opt.filter)) { // jshint ignore:line
                     source += opt.variable + ' += _.' + line + ';';
                 }
             }
@@ -331,7 +294,7 @@
         body = head + body + tail;
 
         //创建函数
-        invoke = new Function(['data', '_'], body);
+        invoke = new Function(['data', '_'], body); // jshint ignore:line
 
         // extend render function.
         extend(invoke, {
