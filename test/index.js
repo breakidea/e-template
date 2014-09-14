@@ -70,7 +70,7 @@ var tpls = lib.parseMaster(co);
 // var fun = pretty();
 
 var opt = {
-    clean: 0,
+    clean: 1,
     variable: 'html',
     strip: 0,
     filter: 'encode',
@@ -80,6 +80,6 @@ var opt = {
 var fns = lib.compile(tpls, opt);
 
 // console.log(fns);
-// console.log(pretty(fns['x-template'].toString()));
-// return
+console.log(pretty(fns['x-template'].toString()));
+return
 console.log(fns['x-template'](data));
