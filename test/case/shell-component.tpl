@@ -1,6 +1,3 @@
-<!-- title: {corp: true} -->
-这里是标题
-
 <!-- index: {clean: 0, apply:['title', 'name', 'online', 'errorUrl', 'repositories', 'version']} -->
 <title><%title%></title>
 <meta name-"version" content="<%:name%>(<%:version%>)">

@@ -1,14 +1,11 @@
-<!--x-template:{"innerLang":1, "strip": 1, "variable": "s", "prefix": "cache.render"}-->
-<%if (list.length){%>
-    <%title|limitlen: 20: "..."%>
-    <%for(var i = 0; i < list.length; i++){%>
-        <%var item = list[i];%>
-        <li class="cl-item moz-clear" data-click="{rsv_click_mid:'<%item.mid%>',rsv_click_index: <%i%>}">
-            <span class="ul-misc-slo-promotion moz-dummy"><%item.promotion|escape:'none'%></span>
-        </li>
+<!-- index: {clean: 1} -->
+<title><%title%></title>
+<meta name-"version" content="<%:name%>(<%:version%>)">
+<ul>
+    <%for(var i = 0; i < repositories.length; i++){var item = repositories[i];%>
+        <li><%item.name|limitlen:15:"..."%>(<%=item.star%>)</li>
     <%}%>
-<%}else{%>
-    <li class="cl-more">
-        <a>查看全部特卖>></a>
-    </li>
+</ul>
+<%if(online){%>
+    <a href="//www.baidu.com/s?wd=<%:title%>" data=url="<%errorUrl%>">点击这里</a>
 <%}%>

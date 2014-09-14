@@ -28,7 +28,7 @@
 
     // exports
     var exports = {
-        version: '0.0.1'
+        version: '0.0.1',
     };
 
     /**
@@ -51,6 +51,27 @@
             }
         }
         return target;
+    };
+
+
+    /**
+     * Calculate the hash for a string.
+     * @public
+     *
+     * @param {String} string The string to Calculated
+     * @return {Number} result
+     */
+    var getHash = function(string) {
+        var hash = 1,
+            code = 0,
+            string = String(string);
+        for (var i = string.length - 1; i >= 0; i--) {
+            code = string.charCodeAt(i);
+            hash = (hash << 6 & 268435455) + code + (code << 14);
+            code = hash & 266338304;
+            hash = code != 0 ? hash ^ code >> 21 : hash;
+        };
+        return hash;
     };
 
     /**
@@ -218,6 +239,9 @@
         }
     };
 
+    var _cacheMap = {};
+
+
     /**
      * install template, params into a callable function.
      * @inner
@@ -226,61 +250,57 @@
      * @see: https://gist.github.com/mycoin/f20d51986ba5878beb38
      * @return
      */
-    var compileMulti = function(tpl, opt, serialize) {
+    var compileMulti = function(tpl, config) {
         var result = {};
-        var help = false;
-        var _ = opt.helper;
+        var item;
+        var content;
 
-        opt = extend(opt, CONFIG_DEFAULT, false);
         tpl = _parseTpl(tpl);
 
-        if (serialize) {
-            if (typeof opt.helper == 'string') {
-                help = _;
-                _ = 'extend(this.$);';
-            } else {
-                throw "[typeError] `opt.helper` must be a string if you want to serialize it.";
-            }
-        }
+        // 遍历并编译
         for (var k in tpl) {
-            var temp = extend(tpl[k], opt, false); // 模板配置的优先级最低
-            var text = temp.content;
-            if (typeof text == 'string') {
-                delete temp.content;
-                result[k] = compile(text, temp, _);
+            item = tpl[k];
+            content = item.content;
+
+            extend(item, config, false); // 模板配置的优先级最低
+            if (typeof content == 'string') {
+                delete item.content;
+                result[k] = compile(content, item);
             }
         }
         return {
-            stringify: function(type, receiver) {
-                var source = [];
-                receiver = receiver || 'template';
-                for (var k in result) {
-                    source.push(k + ': ' + result[k].stringify());
-                }
-                source = 'var ' + receiver + ' = {' + source.join(',') + '};';
-                if (help) {
-                    source += receiver + '.$ = ' + '(function(){var _ = {};' + (help || '') + ';return _;})();'
-                }
-                if (type == 'CMD') {
-                    source = 'define(function(require, exports){' + source + 'return ' + receiver + ';});';
-                }
-                return source;
-            },
+            // 编译结果
             get: function(section) {
-                return result[section];
-            },
-            // render: function(data, helper) {
-            render: function(section, data, helper) {
-                var invoke = this.get(section);
-                var util = {};
-                if (opt.helper && typeof opt.helper == 'object') {
-                    util = opt.helper;
+                if (!section) {
+                    return result;
                 }
-                return invoke.call(null, data, extend(helper, util)) || '';
-            }
-        }
-    };
+                return result[section] || function() {
+                    throw '[typeError] section `' + section + '` not found.';
+                };
+            },
 
+            /**
+             * render data
+             *
+             * @param {string} section name
+             * @param {object} data data JSON formatter
+             * @param {object=}  helper.
+             * @return {string}
+             */
+            render: function(section, data, language) {
+                var invoke = this.get(section);
+
+                // 返回渲染结果
+                if (typeof invoke == 'function') {
+                    language = language || {};
+                    if (config.helper && typeof config.helper == 'object') {
+                        extend(language, config.helper, false);
+                    }
+                    return invoke.call(null, data, language) || '';
+                }
+            }
+        };
+    };
     /**
      * install template, config into a callable function.
      * @inner
@@ -289,28 +309,29 @@
      * @see: https://gist.github.com/mycoin/f20d51986ba5878beb38
      * @return
      */
-    var compile = function(tpl, opt, helper) {
+    var compile = function(tpl, opt) {
         opt = extend(opt, CONFIG_DEFAULT, false);
 
         var body = _convert(tpl, opt); // body源码
-        var head = 'data = data || {}; _ = _ || {}; var extend = function(o){for(var k in o || {})_[k] = o[k];};';
+        var head = 'data = (data && typeof data == "object") ? data : {}; _ = _ || {};';
         var tail = 'return ' + opt.variable + ';';
-        var invoke;
 
-        var _ = helper || opt.helper || '';
+        var invoke; //执行函数
 
-        head += typeof _ == 'string' ? _ : ''; // 内建函数
+        head += (typeof opt.helper == 'string' ? opt.helper : '/*外部提供*/');
         if (opt.apply) {
-            // 已知参数
+            // 已知参数，直接申明在上下文环境
             for (var i = 0; i < opt.apply.length; i++) {
                 head += 'var ' + opt.apply[i] + ' = data["' + opt.apply[i] + '"];';
             }
         } else {
             body = 'with(data){' + body + '}';
         }
-        head += 'var ' + opt.variable + ' = "";';
+        body = 'var ' + opt.variable + ' = "";' + body;
         body = head + body + tail;
-        invoke = new Function('data', '_', body);
+
+        //创建函数
+        invoke = new Function(['data', '_'], body);
 
         // extend render function.
         extend(invoke, {
@@ -345,12 +366,13 @@
              * @param {object=}  config.context context
              * @return {string}
              */
-            render: function(data, helperMap) {
-                var util = {};
-                if (helperMap && typeof helperMap == 'object') {
-                    util = helperMap;
+            render: function(data, language) {
+                language = language || {};
+                if (opt.helper && typeof opt.helper == 'object') {
+                    extend(language, opt.helper, false);
                 }
-                return invoke.call(null, data, extend(_, util)) || '';
+                // 返回渲染结果
+                return invoke.call(null, data, language) || '';
             }
         });
         return invoke;

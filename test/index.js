@@ -56,84 +56,44 @@ var opt = {
     variable: 'html',
     strip: 0,
     filter: 'encode',
-    raw: 0,
-    // helper: require('../x-util'),
-    helper: fs.readFileSync('./x-util.source', 'utf-8')
+    raw: 0
 };
 var tpl = tool.getCases('shell');
 var data = tool.read('data.json', 'JSON');
+var lang = require('../x-util');
 for (var k in tpl) {
-    item = tpl[k];
-    result = lib.compileMulti(item.tpl, opt, true);
-    assert(typeof result.get('index') == 'function');
+    var item = tpl[k];
 
-    var cmd = pretty(result.stringify('CMD')); // CMD格式的代码
-    try {
-        assert(cmd == item.js);
-    } catch (e) {
-        fs.writeFileSync(item.jsFile, cmd);
-        console.log(e);
+    if (k == 'shell-one') {
+        opt.helper = fs.readFileSync('./x-util.source', 'utf-8');
+    } else {
+        opt.helper = require('../x-util');
     }
-    console.log(result.render('index', data, require('../x-util')));
+    var call = lib.compileMulti(item.tpl, opt);
+    var source = call.get('index').stringify('renderIndex') + '; module.exports=renderIndex;';
+    var source = pretty(source);
+    var html = call.render('index', data);
+    // try {
+    assert(item.js == source);
+    // } catch (ex) {
+    //     fs.writeFileSync(item.jsFile, source);
+    //     console.log('编译后的函数不正确');
+    // }
 
-    return
+    // try {
+    assert(item.html == html.trim());
+    // } catch (ex) {
+    // fs.writeFileSync(item.htmlFile, html);
+    // console.log('模板渲染结果不正确');
+    // }
 
-
-
-
-
-
-
-    // result = pretty(lib.compileMulti(item.tpl, null, '1'));
-
-    
-
-    // console.log(result.render('index', data));
-
-    return;
-    try {
-        assert(result == item.js);
-    } catch (e) {
-        fs.writeFileSync(item.jsFile, result);
-        console.log(e);
-    };
+    // try {
+    var required = require(item.path);
+    var requiredHtml = required(data, lang);
+    assert(html == requiredHtml);
+    // } catch (e) {
+    // console.log('编译结果和导出的模板函数不一致');
+    // }
 }
-
-
-
-return;
-var co = tool.read('shell-component.tpl');
-
-
-var tpls = lib._parseTpl(co);
-// var fun = pretty(lib._convert(tpls['index'].content));
-// var fun = pretty();
-
-var opt = {
-    clean: 0,
-    variable: 'html',
-    strip: 0,
-    filter: 'encode',
-    raw: 0,
-    helper: require('../x-util'),
-    // helper: fs.readFileSync('./x-util.source', 'utf-8')
-};
-// var fns = pretty(lib.compileMulti(co, opt, 'CMD'));
-
-// // return console.log(fns);
-// fs.writeFileSync(__dirname + '/case/component-all.js', fns);
-
-
-fns = lib.compileMulti(co, opt);
-
-
-// return console.log(fns);
-// fs.writeFileSync(__dirname + '/case/component.js', pretty(fns['footer'].stringify('this.render')));
-console.log(pretty(fns['index'].stringify()));
-
-
-
-console.log(fns['index'].render(data));
-
 
 console.log('OK');
