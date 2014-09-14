@@ -44,8 +44,3 @@ exports.read = function(filename, type) {
         return content;
     }
 };
-
-// 分割字符串
-exports.split = function(text) {
-
-}

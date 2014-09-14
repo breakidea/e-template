@@ -1,4 +1,72 @@
-this._ = (function() {
+var templ = {
+    header: function(data, _) {
+        data = data || {};
+        _ = _ || {};
+        _.extend = function(o) {
+            for (var k in o) {
+                this[k] = o[k];
+            }
+        };
+        _.extend(this._);
+        var html = "";
+        with(data) {
+            html += "<nav class=\"nav\"></nav>";
+        }
+        return html;
+    },
+    title: function(data, _) {
+        data = data || {};
+        _ = _ || {};
+        _.extend = function(o) {
+            for (var k in o) {
+                this[k] = o[k];
+            }
+        };
+        _.extend(this._);
+        var html = "";
+        with(data) {
+            html += "这里是标题";
+        }
+        return html;
+    },
+    footer: function(data, _) {
+        data = data || {};
+        _ = _ || {};
+        _.extend = function(o) {
+            for (var k in o) {
+                this[k] = o[k];
+            }
+        };
+        _.extend(this._);
+        var html = "";
+        with(data) {
+            html += "<footer>copyright</footer>";
+        }
+        return html;
+    },
+    list: function(data, _) {
+        data = data || {};
+        _ = _ || {};
+        _.extend = function(o) {
+            for (var k in o) {
+                this[k] = o[k];
+            }
+        };
+        _.extend(this._);
+        var html = "";
+        with(data) {
+            html += "<meta name=\"http\" />";
+            for (var i = 0; i < list.length; i++) {
+                var item = list[i];
+                html += "<a href=\"\">";
+                html += _.raw(item.title);
+                html += "</a>";
+            }
+        }
+        return html;
+    }
+};
+templ._ = templ._ || (function() {
     var _ = {};
     _.escape = function(b, a) {
         if (a == "html") {
@@ -78,51 +146,3 @@ this._ = (function() {
     };;
     return _;
 })();
-this.header = function(data, _) {
-    data = data || {};
-    _ = _ || {};
-    for (var k in this._) {
-        _[k] = this._[k];
-    }
-    var html = "";
-    with(data) {
-        html += "<nav class=\"nav\"></nav>";
-    }
-    return html;
-};
-this.title = function(data, _) {
-    data = data || {};
-    _ = _ || {};
-    for (var k in this._) {
-        _[k] = this._[k];
-    }
-    var html = "";
-    with(data) {
-        html += "这里是标题";
-    }
-    return html;
-};
-this.footer = function(data, _) {
-    data = data || {};
-    _ = _ || {};
-    for (var k in this._) {
-        _[k] = this._[k];
-    }
-    var html = "";
-    with(data) {
-        html += "<footer>copyright</footer>";
-    }
-    return html;
-};
-this.list = function(data, _) {
-    data = data || {};
-    _ = _ || {};
-    for (var k in this._) {
-        _[k] = this._[k];
-    }
-    var html = "";
-    with(data) {
-        html += "<meta name=\"http\" />";
-    }
-    return html;
-};

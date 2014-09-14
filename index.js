@@ -110,7 +110,7 @@
     };
 
     var CONFIG_DEFAULT = {
-        clean: true,
+        clean: 0,
         helper: '_.raw=function(a){return a;};_.encode=function(a){return(a+"").replace(/&/g,"&amp;").replace(/\x3C/g,"&lt;").replace(/\x3E/g,"&gt;").replace(/"/g,"&quot;").replace(/\'/g,"&#39;")};',
         variable: 'html',
         strip: true,
@@ -118,7 +118,7 @@
     };
 
     // 占位符边界
-    var REGEXP_LIMITATION = /<%(.*?)%>/g;
+    var REGEXP_LIMITATION = /<%(.*?)%>\s*/g;
 
     // 关键词语句
     var REGEXP_KEYWORD = /(^\s*(var|void|if|for|else|switch|case|break|{|}|;))(.*)?/g;
@@ -226,35 +226,59 @@
      * @see: https://gist.github.com/mycoin/f20d51986ba5878beb38
      * @return
      */
-    var compileMulti = function(tpl, opt, stringify) {
+    var compileMulti = function(tpl, opt, serialize) {
         var result = {};
-        var underscore = false;
+        var help = false;
+        var _ = opt.helper;
 
-        if (typeof tpl == 'string') {
-            tpl = _parseTpl(tpl);
-        }
-        if (stringify && typeof opt.helper == 'string') {
-            underscore = opt.helper;
-            // opt.helper = '_ = extend(_, this._);';
-            opt.helper = 'for(var k in this._){_[k] = this._[k];}';
+        opt = extend(opt, CONFIG_DEFAULT, false);
+        tpl = _parseTpl(tpl);
+
+        if (serialize) {
+            if (typeof opt.helper == 'string') {
+                help = _;
+                _ = 'extend(this.$);';
+            } else {
+                throw "[typeError] `opt.helper` must be a string if you want to serialize it.";
+            }
         }
         for (var k in tpl) {
-            var temp = extend(tpl[k], opt, true); // 模板配置的优先级最低
+            var temp = extend(tpl[k], opt, false); // 模板配置的优先级最低
             var text = temp.content;
             if (typeof text == 'string') {
                 delete temp.content;
-                result[k] = compile(text, temp);
+                result[k] = compile(text, temp, _);
             }
         }
-        if (stringify) {
-            var source = [];
-            underscore && source.push(stringify + '._ = (function(){var _ = {};' + underscore + ';return _;})();');
-            for (var k in result) {
-                source.push(result[k].stringify(stringify + '.' + k));
+        return {
+            stringify: function(type, receiver) {
+                var source = [];
+                receiver = receiver || 'template';
+                for (var k in result) {
+                    source.push(k + ': ' + result[k].stringify());
+                }
+                source = 'var ' + receiver + ' = {' + source.join(',') + '};';
+                if (help) {
+                    source += receiver + '.$ = ' + '(function(){var _ = {};' + (help || '') + ';return _;})();'
+                }
+                if (type == 'CMD') {
+                    source = 'define(function(require, exports){' + source + 'return ' + receiver + ';});';
+                }
+                return source;
+            },
+            get: function(section) {
+                return result[section];
+            },
+            // render: function(data, helper) {
+            render: function(section, data, helper) {
+                var invoke = this.get(section);
+                var util = {};
+                if (opt.helper && typeof opt.helper == 'object') {
+                    util = opt.helper;
+                }
+                return invoke.call(null, data, extend(helper, util)) || '';
             }
-            return source.join('');
         }
-        return result;
     };
 
     /**
@@ -265,19 +289,21 @@
      * @see: https://gist.github.com/mycoin/f20d51986ba5878beb38
      * @return
      */
-    var compile = function(tpl, opt) {
+    var compile = function(tpl, opt, helper) {
         opt = extend(opt, CONFIG_DEFAULT, false);
 
         var body = _convert(tpl, opt); // body源码
-        var head = 'data = data || {}; _ = _ || {};';
+        var head = 'data = data || {}; _ = _ || {}; var extend = function(o){for(var k in o || {})_[k] = o[k];};';
         var tail = 'return ' + opt.variable + ';';
         var invoke;
 
-        head += typeof opt.helper == 'string' ? opt.helper : ''; // 内建函数
+        var _ = helper || opt.helper || '';
+
+        head += typeof _ == 'string' ? _ : ''; // 内建函数
         if (opt.apply) {
             // 已知参数
             for (var i = 0; i < opt.apply.length; i++) {
-                head += 'var ' + opt.apply[i] + ' = data["' + opt.apply[i] + '"] || {};';
+                head += 'var ' + opt.apply[i] + ' = data["' + opt.apply[i] + '"];';
             }
         } else {
             body = 'with(data){' + body + '}';
@@ -319,12 +345,12 @@
              * @param {object=}  config.context context
              * @return {string}
              */
-            render: function(data, context) {
-                var util;
-                if (opt.helper && typeof opt.helper == 'object') {
-                    util = opt.helper;
+            render: function(data, helperMap) {
+                var util = {};
+                if (helperMap && typeof helperMap == 'object') {
+                    util = helperMap;
                 }
-                return invoke.call(context, data, util) || '';
+                return invoke.call(null, data, extend(_, util)) || '';
             }
         });
         return invoke;

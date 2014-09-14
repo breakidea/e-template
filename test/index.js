@@ -51,10 +51,46 @@ for (var k in configFile) {
     };
 }
 // 测试去除占位符
+var opt = {
+    clean: 0,
+    variable: 'html',
+    strip: 0,
+    filter: 'encode',
+    raw: 0,
+    // helper: require('../x-util'),
+    helper: fs.readFileSync('./x-util.source', 'utf-8')
+};
 var tpl = tool.getCases('shell');
+var data = tool.read('data.json', 'JSON');
 for (var k in tpl) {
     item = tpl[k];
-    result = pretty(lib._convert(item.tpl));
+    result = lib.compileMulti(item.tpl, opt, true);
+    assert(typeof result.get('index') == 'function');
+
+    var cmd = pretty(result.stringify('CMD')); // CMD格式的代码
+    try {
+        assert(cmd == item.js);
+    } catch (e) {
+        fs.writeFileSync(item.jsFile, cmd);
+        console.log(e);
+    }
+    console.log(result.render('index', data, require('../x-util')));
+
+    return
+
+
+
+
+
+
+
+    // result = pretty(lib.compileMulti(item.tpl, null, '1'));
+
+    
+
+    // console.log(result.render('index', data));
+
+    return;
     try {
         assert(result == item.js);
     } catch (e) {
@@ -63,29 +99,41 @@ for (var k in tpl) {
     };
 }
 
+
+
+return;
 var co = tool.read('shell-component.tpl');
-var data = tool.read('shell-component.json', 'JSON');
+
+
 var tpls = lib._parseTpl(co);
 // var fun = pretty(lib._convert(tpls['index'].content));
 // var fun = pretty();
 
 var opt = {
-    clean: 1,
+    clean: 0,
     variable: 'html',
     strip: 0,
     filter: 'encode',
     raw: 0,
     helper: require('../x-util'),
-    helper: fs.readFileSync('./x-util.source', 'utf-8')
+    // helper: fs.readFileSync('./x-util.source', 'utf-8')
 };
-var fns = pretty(lib.compileMulti(co, opt, 'this'));
-fs.writeFileSync(__dirname + '/case/component-all.js', fns);
+// var fns = pretty(lib.compileMulti(co, opt, 'CMD'));
+
+// // return console.log(fns);
+// fs.writeFileSync(__dirname + '/case/component-all.js', fns);
 
 
 fns = lib.compileMulti(co, opt);
-fs.writeFileSync(__dirname + '/case/component.js', pretty(fns['footer'].stringify('this.render')));
-// console.log(pretty(fns['index'].stringify('render')));
-// console.log(fns['index'].render(data));
+
+
+// return console.log(fns);
+// fs.writeFileSync(__dirname + '/case/component.js', pretty(fns['footer'].stringify('this.render')));
+console.log(pretty(fns['index'].stringify()));
+
+
+
+console.log(fns['index'].render(data));
 
 
 console.log('OK');

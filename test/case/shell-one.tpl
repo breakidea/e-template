@@ -9,7 +9,6 @@
     <%}%>
 <%}else{%>
     <li class="cl-more">
-        <i href="#" class="c-icon c-icon-warning-circle-gray"></i>
-        抱歉没有找到符合条件的信息，请尝试其他分类<br/ ><a href="<%seeMore%>" target="_blank" data-click="{rsv_click_type:\'more\'}">查看全部特卖>></a>
+        <a>查看全部特卖>></a>
     </li>
 <%}%>

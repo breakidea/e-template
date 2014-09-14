@@ -1,17 +1,39 @@
-if (list.length) {
-    html += _.limitlen(title, 20, "...");
-    for (var i = 0; i < list.length; i++) {
-        var item = list[i];
-        html += "<li class=\"cl-item moz-clear\" data-click=\"{rsv_click_mid:'";
-        html += _.encode(item.mid);
-        html += "',rsv_click_index: ";
-        html += _.encode(i);
-        html += "}\"><span class=\"ul-misc-slo-promotion moz-dummy\">";
-        html += _.escape(item.promotion, 'none');
-        html += "</span></li>";
+var template = {
+    x - template: function(data, _) {
+        data = data || {};
+        _ = _ || {};
+        _.extend = function(o) {
+            for (var k in o || {}) this[k] = o[k];
+        };
+        _.extend(this.$);
+        var s = "";
+        with(data) {
+            if (list.length) {
+                s += _.limitlen(title, 20, "...");
+                for (var i = 0; i < list.length; i++) {
+                    var item = list[i];
+                    s += "<li class=\"cl-item moz-clear\" data-click=\"{rsv_click_mid:'";
+                    s += _.encode(item.mid);
+                    s += "',rsv_click_index: ";
+                    s += _.encode(i);
+                    s += "}\"><span class=\"ul-misc-slo-promotion moz-dummy\">";
+                    s += _.escape(item.promotion, 'none');
+                    s += "</span></li>";
+                }
+            } else {
+                s += "<li class=\"cl-more\"><a>查看全部特卖>></a></li>";
+            }
+        }
+        return s;
     }
-} else {
-    html += "<li class=\"cl-more\"><i href=\"#\" class=\"c-icon c-icon-warning-circle-gray\"></i>抱歉没有找到符合条件的信息，请尝试其他分类<br/ ><a href=\"";
-    html += _.encode(seeMore);
-    html += "\" target=\"_blank\" data-click=\"{rsv_click_type:\\'more\\'}\">查看全部特卖>></a></li>";
-}
+};
+template.$ = (function() {
+    var _ = {};
+    _.raw = function(a) {
+        return a;
+    };
+    _.encode = function(a) {
+        return (a + "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;")
+    };;
+    return _;
+})();
