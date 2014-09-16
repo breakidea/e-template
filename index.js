@@ -6,11 +6,12 @@
  * date:    2014/09/09
  * repos:   https://github.com/mycoin/x-templator
  */
+;
 (function(global, undefined) {
 
     // exports
     var exports = {
-        version: '1.0.0',
+        version: '1.0.0'
     };
 
     /**
@@ -35,6 +36,27 @@
         return target;
     };
 
+
+    /**
+     * Copy properties from the source object to the target object
+     *
+     * @public
+     * @param {mixin..} target the target object
+     * @return target
+     */
+    var mixin = function() {
+        var result = {};
+        for (var i = 0; i < arguments.length; i++) {
+            var item = arguments[i] || {};
+            for (var k in item) {
+                result[k] = item[k];
+            }
+        }
+        return result;
+    };
+
+
+
     /**
      * strip whitespace from the beginning and end of a string
      *
@@ -48,7 +70,7 @@
         if (typeof source == 'string') {
             source = source.replace(/(^\s*|\s*$)/g, '');
         }
-        return source;
+        return source +  '';
     };
 
     // 拆解模板 <!--config: {"sync":true}-->
@@ -93,14 +115,6 @@
         return result;
     };
 
-    var CONFIG_DEFAULT = {
-        clean: 0,
-        helper: '_.raw=function(a){return a;};_.encode=function(a){return(a+"").replace(/&/g,"&amp;").replace(/\x3C/g,"&lt;").replace(/\x3E/g,"&gt;").replace(/"/g,"&quot;").replace(/\'/g,"&#39;")};',
-        variable: 'html',
-        strip: true,
-        filter: 'encode'
-    };
-
     // 占位符边界
     var REGEXP_LIMITATION = /<%(.*?)%>\s*/g;
 
@@ -113,8 +127,180 @@
     // 只包括换行
     var REGEXP_NEWLINE = /\r?\n/g;
 
-    // comment
+    // HTML注释
     var REGEXP_COMMENT = /<!--(?:[\s\S]*?)-->/g;
+
+    // 各种工具函数 
+    // {META.START}
+    var CONFIG_HELPER = {
+        /**
+         * escape string.
+         *
+         * @function
+         * @public
+         *
+         * @param source {String} the target string that will be trimmed.
+         * @param type {String} [`html`, `url`, `js`]
+         * @return {string} the trimed string
+         */
+        escape: function(source, type) {
+            if (type == 'html') {
+                return this.encode(source);
+            } else if (type == 'url') {
+                return this.encodeURIComponent(source);
+            } else if (type == 'js') {
+                return this.escapeJs(source);
+            } else {
+                return source;
+            }
+        },
+
+        /**
+         * 在普通JS环境需要将影响JS语法环境的字符串转义
+         *
+         * see: https://github.com/mycoin/moni-j/blob/master/system/src/com/moni/j/common/util/StringUtil.java
+         * @public
+         * @param {String} target 原始字符串
+         * @return string
+         */
+        escapeJs: function(source) {
+            source = this.init(source)
+                .replace(/\\/g, '\\\\')
+                .replace(/\r?\n/g, '\\n')
+                .replace(/'/g, '\\\'')
+                .replace(/"/g, '\\\"');
+            return source;
+        },
+
+        /**
+         * strip whitespace from the beginning and end of a string
+         *
+         * @function
+         * @public
+         *
+         * @param source {String} the target string that will be trimmed.
+         * @return {string} the trimed string
+         */
+        trim: function(source) {
+            return this.init(source).replace(/^\s*|\s*$/g, '');
+        },
+
+        //transmite `undefined`, `null` to "" an enpty string
+        init: function(source) {
+            if ('undefined' == typeof source || source === null) {
+                source = '';
+            }
+            // We don't use String(obj) because it could be overriden.
+            return '' + source;
+        },
+
+        /**
+         * concat string together
+         *
+         * @function
+         * @public
+         *
+         * @param {String..} the snippets.
+         * @return {string} string
+         */
+        cat: function() {
+            var array = [].slice.call(arguments);
+            return array.join('');
+        },
+
+        /**
+         * to encode the string as a URI component for URI rules.
+         *
+         * @function
+         * @public
+         *
+         * @param source {String} the target string.
+         * @return {string} the escaped string
+         * @see http://stackoverflow.com/questions/75980/best-practice-escape-or-encodeuri-encodeuricomponent
+         */
+        encodeURIComponent: function(source) {
+            source = this.init(source);
+            if (encodeURIComponent) {
+                return encodeURIComponent(source);
+            } else {
+                return escape(source);
+            }
+        },
+
+        /**
+         * encoding the target string from HTML
+         *
+         * @function
+         * @public
+         *
+         * @param source {String} the target string
+         * @return {string} safe source
+         */
+        encode: function(source) {
+            source = this.init(source).replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/\x3E/g, '&gt;')
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+            return source;
+        },
+
+        /**
+         * return sring, without any operation
+         *
+         * @function
+         * @public
+         *
+         * @param source {String} the target string
+         * @return {string} safe source
+         */
+        raw: function(source) {
+            return source;
+        },
+
+        /**
+         * truncate
+         *
+         * @function
+         * @public
+         *
+         * @param source {String} the target string
+         * @return {string} source
+         */
+        truncate: function(string, maxLength, etc) {
+            var length = 0;
+            var result = '';
+            var chinese = /[^\x00-\xff]/g;
+            var chars = '';
+            var strLength = this.init(string).replace(chinese, '**').length;
+            for (var i = 0; i < strLength; i++) {
+                chars = string.charAt(i).toString();
+                if (chars.match(chinese) !== null) {
+                    length += 2;
+                } else {
+                    length++;
+                }
+                if (length > maxLength) {
+                    break;
+                }
+                result += chars;
+            }
+            if (etc && strLength > maxLength) {
+                result += etc;
+            }
+            return result;
+        }
+    };
+    // {META.RND}
+
+    // 默认配置参数
+    var CONFIG_DEFAULT = {
+        // clean: 0,
+        variable: '_out',
+        strip: 1,
+        filter: 'encode'
+    };
+
 
     /**
      * remove placeholder, and return javascript source
@@ -132,8 +318,7 @@
         var offset = 0; // 游标计数器
         var match;
         var source = '';
-
-        opt = extend(opt, CONFIG_DEFAULT, false);
+        opt = mixin(CONFIG_DEFAULT, opt);
 
         // start...
         content = opt.strip ? content.replace(REGEXP_COMMENT, '') : content;
@@ -213,7 +398,7 @@
      * @see: https://gist.github.com/mycoin/f20d51986ba5878beb38
      * @return
      */
-    var compileMulti = function(tpl, config) {
+    exports.compileMulti = function(tpl, config) {
         var result = {};
         var item;
         var content;
@@ -224,22 +409,22 @@
         for (var k in tpl) {
             item = tpl[k];
             content = item.content;
-
-            extend(item, config, false); // 模板配置的优先级最低
+            item = mixin(config, item); // 模板配置的优先级最低
             if (typeof content == 'string') {
                 delete item.content;
-                result[k] = compile(content, item);
+                result[k] = this.compile(content, item);
             }
         }
         return {
             // 编译结果
             get: function(section) {
-                if (!section) {
+                if (typeof section == 'string') {
+                    return result[section] || function() {
+                        throw '[typeError] section `' + section + '` not found.';
+                    };
+                } else {
                     return result;
                 }
-                return result[section] || function() {
-                    throw '[typeError] section `' + section + '` not found.';
-                };
             },
 
             /**
@@ -247,20 +432,19 @@
              *
              * @param {string} section name
              * @param {object} data data JSON formatter
-             * @param {object=}  helper.
+             * @param {object=} util.
              * @return {string}
              */
-            render: function(section, data, language) {
+            render: function(section, data, util) {
                 var invoke = this.get(section);
 
-                // 返回渲染结果
-                if (typeof invoke == 'function') {
-                    language = language || {};
-                    if (config.helper && typeof config.helper == 'object') {
-                        extend(language, config.helper, false);
-                    }
-                    return invoke.call(null, data, language) || '';
+                util = util || {};
+                if (!config || config.allowOverride !== false) {
+                    extend(util, CONFIG_HELPER, false);
                 }
+
+                // 返回渲染结果
+                return invoke.call(null, data, util) || '';
             }
         };
     };
@@ -272,29 +456,32 @@
      * @see: https://gist.github.com/mycoin/f20d51986ba5878beb38
      * @return
      */
-    var compile = function(tpl, opt) {
-        opt = extend(opt, CONFIG_DEFAULT, false);
+    exports.compile = function(tpl, opt) {
+        opt = mixin(CONFIG_DEFAULT, opt);
 
+        var head = 'data = (data && typeof data == "object") ? data : {};' + 'var ' + opt.variable + ' = "";';
         var body = _convert(tpl, opt); // body源码
-        var head = 'data = (data && typeof data == "object") ? data : {}; _ = _ || {};';
         var tail = 'return ' + opt.variable + ';';
 
-        var invoke; //执行函数
-
-        head += (typeof opt.helper == 'string' ? opt.helper : '/*外部提供*/');
+        if (false !== opt.allowOverride) {
+            head += '_ = _ || {};';
+            head += 'var extend = function(util){for(var key in util){_[key] = util[key];}};';
+            if (typeof opt.helper == 'string') {
+                head += opt.helper;
+            } else if (opt.helper) {
+                throw '[typeError] helper must be a string, like `extend({key: function});`';
+            }
+        }
         if (opt.apply) {
-            // 已知参数，直接申明在上下文环境
+            // 已知参数，直接申明在环境
             for (var i = 0; i < opt.apply.length; i++) {
                 head += 'var ' + opt.apply[i] + ' = data["' + opt.apply[i] + '"];';
             }
         } else {
             body = 'with(data){' + body + '}';
         }
-        body = 'var ' + opt.variable + ' = "";' + body;
-        body = head + body + tail;
-
         //创建函数
-        invoke = new Function(['data', '_'], body); // jshint ignore:line
+        var invoke = new Function(['data', '_'], head + body + tail); // jshint ignore:line
 
         // extend render function.
         extend(invoke, {
@@ -307,6 +494,7 @@
              */
             stringify: function(receiver) {
                 var code = invoke.toString().substr(18);
+
                 if (receiver && typeof receiver == 'string') {
                     if (~receiver.lastIndexOf('.')) {
                         // this.xxx = function...
@@ -329,21 +517,17 @@
              * @param {object=}  config.context context
              * @return {string}
              */
-            render: function(data, language) {
-                language = language || {};
-                if (opt.helper && typeof opt.helper == 'object') {
-                    extend(language, opt.helper, false);
-                }
+            render: function(data, util) {
                 // 返回渲染结果
-                return invoke.call(null, data, language) || '';
+                util = util || {};
+                if (opt.allowOverride !== false) {
+                    extend(util, CONFIG_HELPER, false);
+                }
+                return invoke.call(null, data, util);
             }
         });
         return invoke;
     };
-
-    exports.config = CONFIG_DEFAULT;
-    exports.compile = compile;
-    exports.compileMulti = compileMulti;
 
     exports._parseTpl = _parseTpl;
     exports._filterVars = _filterVars;

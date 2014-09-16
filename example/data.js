@@ -1,5 +1,5 @@
-{
-    "title": "全世界最快的模板引擎!",
+var data = {
+    "title": "全世界最快的模板引擎",
     "name": "x-templator",
     "version": "0.0.1",
     "repositories": [
@@ -25,5 +25,9 @@
         }
     ],
     "online": true,
+    "xss": "<script type=\"text/javascript\">\nalert('CSS');",
     "errorUrl": "https://github.com/mycoin"
-}
+};
+try {
+    module.exports = data;
+} catch(e){}

@@ -1,0 +1,87 @@
+<html>
+<head>
+    <title>测试用例</title>
+</head>
+<body>
+<script type="text/javascript" src="../index.js?v=1"></script>
+<script type="text/javascript" src="../test/x-util.js?v=1"></script>
+<script type="text/javascript" src="data.js"></script>
+<script type="text/javascript" src="generated.js"></script>
+<style type="text/css">
+body,html {
+    padding: 0; background: #EEE;
+}
+
+h3 {
+    margin: 15px 0 5px 0;
+}
+.result {
+    width: 80%;
+    height: 200px;
+}
+</style>
+
+<textarea id="result" style="display:none"><script type="text/javascript">
+alert('CSS');//这里是注释
+</script></textarea>
+<h3>1、模板内容》</h3>
+<textarea id="tplDiv" class="result"></textarea>
+
+<h3>2、浏览器`xTemplator`对象渲染结果</h3>
+<textarea id="clientRes" class="result"></textarea>
+
+<h3>3、Node 导出的缓存 JS 渲染结果</h3>
+<textarea id="nodeRes" class="result"></textarea>
+
+<script type="text/javascript">
+var g = function (id) {
+    return document.getElementById(id);
+}
+function ajax(url, callback) {
+    var xmlHttp;
+    if (window.ActiveXObject) {
+        xmlHttp = new ActiveXObject('Microsoft.XMLHTTP');
+    } else if (window.XMLHttpRequest) {
+        xmlHttp = new XMLHttpRequest();
+    }
+    if (xmlHttp) {
+        xmlHttp.onreadystatechange = function() {
+            if (xmlHttp.readyState == 4) {
+                if (xmlHttp.status == 200) {
+                    var reqponseText = xmlHttp.responseText;
+                    callback(reqponseText, xmlHttp);
+                } else {
+                    throw xmlHttp.statusText;
+                }
+            }
+        };
+        xmlHttp.open('GET', url, true);
+        xmlHttp.send(null);
+    } else {
+        alert('Your browser does not support XMLHTTP.');
+    }
+    return xmlHttp;
+}
+
+ajax('page.tpl', function (tpl) {
+    var clientFn, cacheFn, clientHtml, cacheHtml, multiHtml, multiFn;
+    // 模板内容
+    clientFn = xTemplator.compile(tpl); // 只编译一个模板, 浏览器端编译
+    multiFn = xTemplator.compileMulti(tpl); // 多个模板一起编译
+    cacheFn = cache.index;
+
+    // 下面两种方法等价
+    clientHtml = clientFn(data, CONFIG_HELPER);
+    clientHtml = clientFn.render(data);
+
+    multiHtml = multiFn.render('index', data);
+    cacheHtml = cacheFn(data, CONFIG_HELPER); // 注意，这个地方的原生的 JS 所以没有 render 方法！
+
+    g('tplDiv').value = tpl
+    g('clientRes').value = clientHtml;   
+    g('nodeRes').value = cacheHtml;
+});
+
+</script>
+</body>
+</html>

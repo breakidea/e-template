@@ -3,7 +3,7 @@
 <meta name-"version" content="<%:name%>(<%:version%>)">
 <ul>
     <%for(var i = 0; i < repositories.length; i++){var item = repositories[i];%>
-        <li><%item.name|limitlen:15:"..."%>(<%=item.star%>)</li>
+        <li><%item.name|truncate:15:"..."%>(<%=item.star%>)</li>
     <%}%>
 </ul>
 <%if(online){%>

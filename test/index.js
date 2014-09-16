@@ -47,7 +47,7 @@ for (var k in configFile) {
         assert(JSON.stringify(result) == item.json);
     } catch (e) {
         // fs.writeFileSync(item.jsonFile, JSON.stringify(result));
-        console.error(e);
+        console.error('模板拆分函数不正确');
     };
 }
 // 测试去除占位符
@@ -63,37 +63,34 @@ var data = tool.read('data.json', 'JSON');
 var lang = require('./x-util');
 for (var k in tpl) {
     var item = tpl[k];
+    
+    opt.helper = fs.readFileSync(__dirname + '/x-util.source', 'utf-8'); // 将内建到编译结果中，每个section都冗余一份
+    // opt.helper = lang;
 
-    if (k == 'shell-one') {
-        opt.helper = fs.readFileSync(__dirname + '/x-util.source', 'utf-8');
-    } else {
-        opt.helper = require('./x-util');
-    }
     var call = lib.compileMulti(item.tpl, opt);
     var source = call.get('index').stringify('renderIndex') + '; module.exports=renderIndex;';
     var source = pretty(source);
     var html = call.render('index', data);
-    // try {
-    assert(item.js == source);
-    // } catch (ex) {
-    //     fs.writeFileSync(item.jsFile, source);
-    //     console.log('编译后的函数不正确');
-    // }
+    try {
+        assert(item.js == source);
+    } catch (ex) {
+        // fs.writeFileSync(item.jsFile, source);
+        console.log('编译后的函数源码不正确');
+    }
+    try {
+        assert(item.html == html.trim());
+    } catch (ex) {
+        // fs.writeFileSync(item.htmlFile, html);
+        console.log('模板渲染结果不正确');
+    }
 
-    // try {
-    assert(item.html == html.trim());
-    // } catch (ex) {
-    // fs.writeFileSync(item.htmlFile, html);
-    // console.log('模板渲染结果不正确');
-    // }
-
-    // try {
-    var required = require(item.path);
-    var requiredHtml = required(data, lang);
-    assert(html == requiredHtml);
-    // } catch (e) {
-    // console.log('编译结果和导出的模板函数不一致');
-    // }
+    try {
+        var required = require(item.path);
+        var requiredHtml = required(data, lang);
+        assert(html == requiredHtml);
+    } catch (e) {
+        console.log('编译结果和导出的模板函数不一致');
+    }
 }
 
 console.log('OK');
