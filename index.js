@@ -74,6 +74,7 @@
     };
 
     // 拆解模板 <!--config: {"sync":true}-->
+    // @todo 这个正则在 IE 下有问题
     var REGEXP_MASTER = /<!--\s*([\w\-]{1,}\s*:\s*\{.*?\})\s*-->/m;
 
     // 拆分配置 footer: {"section":"s-footer"}
@@ -112,6 +113,7 @@
                 content: trim(match[0])
             };
         }
+        alert(match.length)
         return result;
     };
 
