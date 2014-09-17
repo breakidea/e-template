@@ -1,6 +1,52 @@
 var fs = require('fs');
-var lib = require('../');
+var lib = require('../main');
 var pretty = require('js-pretty');
+
+var tpl = fs.readFileSync('./page.tpl', 'utf-8');
+var data = require('./data');
+
+var opt = {
+    clean: false,
+    variable: 'v',
+    strip: 1,
+    filter: 'encode',
+};
+var comp = lib.compile(tpl);
+
+console.log(pretty(comp.toString()));
+console.log(comp.render(data));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+return
+
+
+
 
 
 var tpl = fs.readFileSync('./page.tpl', 'utf-8');
