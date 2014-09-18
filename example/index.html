@@ -4,9 +4,7 @@
 </head>
 <body>
 <script type="text/javascript" src="../index.js?v=1"></script>
-<script type="text/javascript" src="../test/x-util.js?v=1"></script>
 <script type="text/javascript" src="data.js"></script>
-<script type="text/javascript" src="generated.js"></script>
 <style type="text/css">
 body,html {
     padding: 0; background: #EEE;
@@ -20,18 +18,14 @@ h3 {
     height: 200px;
 }
 </style>
-
-<textarea id="result" style="display:none"><script type="text/javascript">
-alert('CSS');//这里是注释
-</script></textarea>
 <h3>1、模板内容》</h3>
 <textarea id="tplDiv" class="result"></textarea>
 
 <h3>2、浏览器`xTemplator`对象渲染结果</h3>
 <textarea id="clientRes" class="result"></textarea>
 
-<h3>3、Node 导出的缓存 JS 渲染结果</h3>
-<textarea id="nodeRes" class="result"></textarea>
+<h3>3、编译结果</h3>
+<textarea id="cpmRes" class="result"></textarea>
 
 <script type="text/javascript">
 var g = function (id) {
@@ -63,24 +57,38 @@ function ajax(url, callback) {
     return xmlHttp;
 }
 
-ajax('page.tpl', function (tpl) {
-    var clientFn, cacheFn, clientHtml, cacheHtml, multiHtml, multiFn;
-    // 模板内容
-    clientFn = xTemplator.compile(tpl); // 只编译一个模板, 浏览器端编译
-    multiFn = xTemplator.compileMulti(tpl); // 多个模板一起编译
-    cacheFn = cache.index;
 
-    // 下面两种方法等价
-    clientHtml = clientFn(data, CONFIG_HELPER);
+
+xTemplator.config('filter', 'encode');
+
+ajax('page.tpl', function (tpl) {
+    var clientFn, clientHtml, cpmResTxt;
+    
+    // 模板内容
+    clientFn = xTemplator.compile(tpl);
+    clientHtml = clientFn.render(data);
+    cpmResTxt = clientFn.toString();
+
+    // 也可以这样使用
+    // clientHtml = xTemplator.render(tpl, data);
+
+    g('tplDiv').value = tpl;
+    g('clientRes').value = clientHtml;
+    g('cpmRes').value = cpmResTxt;  
+});
+
+g('tplDiv').onkeyup = function () {
+    var clientFn, clientHtml, cpmResTxt;
+    
+    // 模板内容
+    clientFn = xTemplator.compile(this.value);
+    cpmResTxt = clientFn.toString();
     clientHtml = clientFn.render(data);
 
-    multiHtml = multiFn.render('index', data);
-    cacheHtml = cacheFn(data, CONFIG_HELPER); // 注意，这个地方的原生的 JS 所以没有 render 方法！
+    g('clientRes').value = clientHtml;
+    g('cpmRes').value = cpmResTxt;
+};
 
-    g('tplDiv').value = tpl
-    g('clientRes').value = clientHtml;   
-    g('nodeRes').value = cacheHtml;
-});
 
 </script>
 </body>

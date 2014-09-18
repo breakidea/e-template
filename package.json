@@ -1,27 +1,27 @@
 {
-  "name": "x-templator",
-  "version": "1.0.1",
+  "name": "e-template",
+  "version": "1.0.0",
   "description": "Yet another template engine in Javascript/NodeJS, adaptation AMD, CMD and client environment.",
-  "main": "template.js",
+  "main": "index.js",
   "scripts": {
     "test": "node test/index.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mycoin/x-templator.git"
+    "url": "https://github.com/mycoin/e-template.git"
   },
   "keywords": [
     "template",
-    "x-templator",
+    "e-template",
     "format string",
     "html"
   ],
   "author": "mycoin (nqliujiangtao@gmail.com)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mycoin/x-templator/issues"
+    "url": "https://github.com/mycoin/e-template/issues"
   },
-  "homepage": "https://github.com/mycoin/x-templator",
+  "homepage": "https://github.com/mycoin/e-template",
   "dependencies": {
     "js-pretty": "^1.0.0"
   }
