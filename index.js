@@ -1,18 +1,35 @@
 /*
  * Copyright 2014 Baidu Inc. All rights reserved.
  *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
  * file:    index.js
  * author:  mycoin (nqliujiangtao@gmail.com)
  * date:    2014/09/09
- * repos:   https://github.com/mycoin/x-templator
+ * repos:   https://github.com/mycoin/e-template
  */
-;
 (function(global, undefined) {
     'use strict'; // using strict mode
 
     // exports
     var exports = {
-        version: '1.0.0'
+        version: '1.0.2'
     };
 
     /**
@@ -209,8 +226,8 @@
      */
     function compile(tpl, opt) {
         var match;
-        if (match = REGEXP_MASTER.test(tpl)) {
-            match = new Function('return ' + RegExp[1])();
+        if (match = REGEXP_MASTER.test(tpl)) { // jshint ignore:line
+            match = new Function('return ' + RegExp[1])(); // jshint ignore:line
             tpl = tpl.replace(RegExp[0], '');
         }
         opt = mixin(CONFIG_DEFAULT, match, opt);
@@ -422,6 +439,10 @@
     exports.config = config;
     exports.compile = compile;
 
+    exports.__filters = filters;
+    exports.__convert = convert;
+    exports.__filterVars = filterVars;
+
     /**
      * @public
      *
@@ -443,6 +464,6 @@
         });
     } else {
         // [3] browser-side, global
-        global.xTemplator = global.xTemplator || exports;
+        global.eTemplate = global.eTemplate || exports;
     }
 })(this);

@@ -21,7 +21,7 @@ h3 {
 <h3>1、模板内容》</h3>
 <textarea id="tplDiv" class="result"></textarea>
 
-<h3>2、浏览器`xTemplator`对象渲染结果</h3>
+<h3>2、浏览器`eTemplate`对象渲染结果</h3>
 <textarea id="clientRes" class="result"></textarea>
 
 <h3>3、编译结果</h3>
@@ -57,20 +57,18 @@ function ajax(url, callback) {
     return xmlHttp;
 }
 
-
-
-xTemplator.config('filter', 'encode');
+eTemplate.config('filter', 'encode');
 
 ajax('page.tpl', function (tpl) {
     var clientFn, clientHtml, cpmResTxt;
     
     // 模板内容
-    clientFn = xTemplator.compile(tpl);
+    clientFn = eTemplate.compile(tpl);
     clientHtml = clientFn.render(data);
     cpmResTxt = clientFn.toString();
 
     // 也可以这样使用
-    // clientHtml = xTemplator.render(tpl, data);
+    // clientHtml = eTemplate.render(tpl, data);
 
     g('tplDiv').value = tpl;
     g('clientRes').value = clientHtml;
@@ -81,7 +79,7 @@ g('tplDiv').onkeyup = function () {
     var clientFn, clientHtml, cpmResTxt;
     
     // 模板内容
-    clientFn = xTemplator.compile(this.value);
+    clientFn = eTemplate.compile(this.value);
     cpmResTxt = clientFn.toString();
     clientHtml = clientFn.render(data);
 
