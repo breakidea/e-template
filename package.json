@@ -1,6 +1,6 @@
 {
   "name": "e-template",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Yet another template engine in Javascript/NodeJS, adaptation AMD, CMD and client environment.",
   "main": "index.js",
   "scripts": {
