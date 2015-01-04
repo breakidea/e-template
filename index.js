@@ -225,10 +225,10 @@
      * @return
      */
     function compile(tpl, opt) {
-        var match;
-        if (match = REGEXP_MASTER.test(tpl)) { // jshint ignore:line
-            match = new Function('return ' + RegExp[1])(); // jshint ignore:line
-            tpl = tpl.replace(RegExp[0], '');
+        var match, find;
+        if (find = REGEXP_MASTER.exec(tpl)) { // jshint ignore:line
+            match = new Function('return ' + find[1])(); // jshint ignore:line
+            tpl = tpl.replace(find[0], '');
         }
         opt = mixin(CONFIG_DEFAULT, match, opt);
 
